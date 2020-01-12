@@ -1,10 +1,10 @@
-all: tiger
+all: tigc
 
 PHONY: all clean
 
 clean: 
-	rm -f tiger
+	rm -f tigc
 
-tiger: tiger.sml 
-	mlton tiger.mlb
+tigc: tiger.sml 
+	mlton -output tigc tiger.mlb
 
