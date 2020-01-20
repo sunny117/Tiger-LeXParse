@@ -1,5 +1,5 @@
 %.lex.sml : %.lex
-mllex $<
+	mllex $<
 
 PHONY : all clean test
 

@@ -55,9 +55,10 @@ datatype Token = Newline
 		| K of keywords
 		| O of objectKeywords
 		| S of symbols
-		| W of whiteCharacters
+		| W of whiteCharacters*int
 		| Comments of string
 		| Quotes of string
+		| String of string
 		| Const of int
 
 
