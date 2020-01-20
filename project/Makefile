@@ -1,10 +1,16 @@
-all: tigc
+%.lex.sml : %.lex
+	mllex $<
 
-PHONY: all clean
+PHONY : all clean test
 
-clean: 
-	rm -f tigc
+all : tigh
 
-tigc: tiger.sml 
-	mlton -output tigc tiger.mlb
+tigh: tokens.sml tiger.lex.sml tiger.mlb tigh.sml
+	mlton -output tigh tiger.mlb
 
+clean :
+	rm -f tigh
+	rm -f tiger.lex.sml
+
+test:
+	$(CURDIR)/tigh test.txt
