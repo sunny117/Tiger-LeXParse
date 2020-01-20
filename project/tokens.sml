@@ -56,7 +56,7 @@ datatype Token = Newline
 		| O of objectKeywords
 		| S of symbols
 		| W of whiteCharacters
-		| Comments
+		| Comments of string
 		| Quotes of string
 		| Const of int
 
