@@ -1,16 +1,19 @@
 %.lex.sml : %.lex
 	mllex $<
 
+%.grm.sml : %.grm
+	mlyacc $<
+
 PHONY : all clean test
 
-all : tigh
+all : parsing
 
-tigh: tokens.sml tiger.lex.sml tiger.mlb tigh.sml
-	mlton -output tigh tiger.mlb
+parsing: ast.sml tiger.sml tiger.mlb tiger.grm.sml tiger.lex.sml indent.sml
+	mlton -output parsing tiger.mlb
 
 clean :
-	rm -f tigh
+	rm -f parsing
 	rm -f tiger.lex.sml
 
-test:
-	$(CURDIR)/tigh test.txt
+test: parsing
+	$(CURDIR)/parsing test.txt
