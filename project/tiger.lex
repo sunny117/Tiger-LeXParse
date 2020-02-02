@@ -39,9 +39,10 @@ ws = [\ \t];
 
 %%
 
-[+-~]?{digit}+			=> (Tokens.CONST(toInt yytext, !lineRef, !lineRef));
-{ws}+				=> (lex());
+{digit}+			=> (Tokens.CONST(toInt yytext, !lineRef, !lineRef));
+
 \n({ws}*\n)*			=> (lex());
+{ws}+				=> (lex());
 
 "if"			=> (Tokens.IF(!lineRef,!lineRef));
 "then"			=> (Tokens.THEN(!lineRef,!lineRef));

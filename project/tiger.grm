@@ -13,7 +13,6 @@
     | MUL
     | DIV
     | EOF
-    | NEWLINE
     | SEMICOLON
     | IF | THEN | ELSE | LET | IN | END | BREAK | ASSIGNMENT | FOR | TO | DO | WHILE | EQUAL
 
@@ -34,18 +33,16 @@
 %%
 
 PROGRAM : EXPS                 ( EXPS )
-	| EXPS NEWLINE         ( EXPS )
 
-EXPS    : (* empty *)           ( []            )
-	| EXP NEWLINE EXPS      ( EXP :: EXPS   )
-	| EXP EXPS		( EXP :: EXPS	)		
+EXPS    : (* empty *)           ( []            )		
 	| EXP SEMICOLON EXPS	( EXP :: EXPS	)
+	| EXP EXPS		( EXP :: EXPS	)
 
-EXP     : IF EQ THEN EXP     		( Ast.IF EQ EXP )
+EXP     : IF EQ THEN EXPR     		( Ast.IF EQ EXPR )
 	| ELSE EXP	       		( Ast.ELSE  EXP )
 	| LET EXPS IN EXPS END		( Ast.LET EXPS1 EXPS2 )
 	| BREAK				( Ast.Break	)
-	| VAR ASSIGNMENT EXP		( Ast.ASSIGNMENT (Ast.Var VAR) EXP)
+	| VAR ASSIGNMENT EXPR		( Ast.ASSIGNMENT (Ast.Var VAR) EXPR)
 	| FOR VAR ASSIGNMENT EXPR TO EXPR DO EXP (Ast.FOR (Ast.Var VAR) EXPR1 EXPR2 EXP)
 	| WHILE EQ DO EXP		( Ast.WHILE EQ EXP )
 
