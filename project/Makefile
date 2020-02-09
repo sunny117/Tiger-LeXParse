@@ -14,9 +14,6 @@ parsing: ast.sml tiger.sml tiger.mlb tiger.grm.sml tiger.lex.sml indent.sml
 clean :
 	rm -f parsing
 	rm -f tiger.lex.sml
-	rm -f tiger.grm.desc
-	rm -f tiger.grm.sig
-	rm -f tiger.grm.sml
 
 test: parsing
 	$(CURDIR)/parsing test.txt

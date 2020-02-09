@@ -32,19 +32,18 @@ val newlineCount = List.length o List.filter (fn x => x = #"\n") o String.explod
 
 %%
 
-%header (functor EXPLexFun(structure Tokens : EXP_TOKENS));
+%header (functor ExprLexFun(structure Tokens : Expr_TOKENS));
 digit = [0-9];
 str = [a-zA-Z];
 ws = [\ \t];
 
 %%
 
-[+-~]?{digit}+			=> (Tokens.CONST(toInt yytext, !lineRef, !lineRef));
+{digit}+			=> (Tokens.CONST(toInt yytext, !lineRef, !lineRef));
 
 \n({ws}*\n)*			=> (lex());
 {ws}+				=> (lex());
 
-"array"			=> (Tokens.ARRAY(!lineRef, !lineRef));
 "if"			=> (Tokens.IF(!lineRef,!lineRef));
 "then"			=> (Tokens.THEN(!lineRef,!lineRef));
 "else"			=> (Tokens.ELSE(!lineRef,!lineRef));
@@ -55,46 +54,15 @@ ws = [\ \t];
 "let"			=> (Tokens.LET(!lineRef,!lineRef));
 "in"			=> (Tokens.IN(!lineRef,!lineRef));
 "end"			=> (Tokens.END(!lineRef,!lineRef));
-"of"			=> (Tokens.OF(!lineRef,!lineRef));
 "break"			=> (Tokens.BREAK(!lineRef,!lineRef));
-"nil"			=> (Tokens.NIL(!lineRef,!lineRef));
-"function"		=> (Tokens.FUNCTION(!lineRef,!lineRef));
-"var"			=> (Tokens.VAR(!lineRef,!lineRef));
-"type"			=> (Tokens.TYPE(!lineRef,!lineRef));
-"import"		=> (Tokens.IMPORT(!lineRef,!lineRef));
-"primitive"		=> (Tokens.PRIMITIVE(!lineRef,!lineRef));
 
-
-"class"			=> (Tokens.CLASS(!lineRef,!lineRef));
-"extends"		=> (Tokens.EXTENDS(!lineRef,!lineRef));
-"method"		=> (Tokens.METHOD(!lineRef,!lineRef));
-"new"			=> (Tokens.NEW(!lineRef,!lineRef));
-
-
-":="			=> (Tokens.COLONEQUAL(!lineRef,!lineRef));
-","			=> (Tokens.COMMA(!lineRef,!lineRef));
-":"			=> (Tokens.COLON(!lineRef,!lineRef));
+":="			=> (Tokens.ASSIGNMENT(!lineRef,!lineRef));
 ";"			=> (Tokens.SEMICOLON(!lineRef,!lineRef));
-"("			=> (Tokens.LEFTB(!lineRef,!lineRef));
-")"			=> (Tokens.RIGHTB(!lineRef,!lineRef));
-"["			=> (Tokens.LEFTSB(!lineRef,!lineRef));
-"]"			=> (Tokens.RIGHTSB(!lineRef,!lineRef));
-"{"			=> (Tokens.LEFTCB(!lineRef,!lineRef));
-"}"			=> (Tokens.RIGHTCB(!lineRef,!lineRef));
-"."			=> (Tokens.DOT(!lineRef,!lineRef));
 "+"			=> (Tokens.PLUS(!lineRef,!lineRef));
 "-"			=> (Tokens.MINUS(!lineRef,!lineRef));
 "*"			=> (Tokens.MUL(!lineRef,!lineRef));
 "/"			=> (Tokens.DIV(!lineRef,!lineRef));
 "="			=> (Tokens.EQUAL(!lineRef,!lineRef));
-"<>"			=> (Tokens.LTGT(!lineRef,!lineRef));
-"<"			=> (Tokens.LT(!lineRef,!lineRef));
-"<="			=> (Tokens.LTEQUAL(!lineRef,!lineRef));
-">"			=> (Tokens.GT(!lineRef,!lineRef));
-">="			=> (Tokens.GTEQUAL(!lineRef,!lineRef));
-"&"			=> (Tokens.AND(!lineRef,!lineRef));
-"|"			=> (Tokens.OR(!lineRef,!lineRef));
-"\""			=> (Tokens.QUOTE(!lineRef,!lineRef));
 
-{str}+			=> (Tokens.ID(yytext,!lineRef,!lineRef));
+{str}+			=> (Tokens.VAR(yytext,!lineRef,!lineRef));
 
