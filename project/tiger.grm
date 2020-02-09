@@ -20,16 +20,16 @@
 
 %nonterm  EXP     	of Ast.Exp
         | EXPS    	of Ast.Exp list
-        | PROGRAM 	of Ast.Exp list
-	| HELP1   	of Ast.Exp
+        | PROGRAM 	of Ast.Program
+	| HELP1   	of Ast.Help1
 	| HELP2   	of Ast.Exp list
-	| LVALUE	of Ast.Exp
-	| DECS		of Ast.Exp list
-	| DEC		of Ast.Exp
-	| CLASSFIELDS	of Ast.Exp list
-	| CLASSFIELD	of Ast.Exp
-	| TY		of Ast.Exp
-	| TYFIELD	of Ast.Exp
+	| LVALUE	of Ast.Lvalue
+	| DECS		of Ast.Dec list
+	| DEC		of Ast.Dec
+	| CLASSFIELDS	of Ast.ClassField list
+	| CLASSFIELD	of Ast.ClassField
+	| TY		of Ast.Ty
+	| TYFIELD	of Ast.TyField
 
 
 %noshift EOF
@@ -44,8 +44,8 @@
 
 %%
 
-PROGRAM : EXP	( EXP :: []   )
-	| DECS  ( DECS	)
+PROGRAM : EXP	( Ast.Expr EXP  )
+	| DECS  ( Ast.Decr DECS	)
 
 (* 0 *)
 EXP     : (* Literals *)
@@ -59,13 +59,13 @@ EXP     : (* Literals *)
 	  (* Object Creation *)
 	| NEW ID				 (Ast.New (Ast.Var ID)	)
 	  (* Variables, field, elements of an array *)
-	| ID					 ( Ast.Var ID	)
-	| LVALUE				 ( LVALUE	)
+	| ID					 ( Ast.I1 (Ast.Var ID)	)
+	| LVALUE				 ( Ast.L LVALUE	)
 	  (* Function call *)
 	| ID LEFTB HELP2 RIGHTB			 ( Ast.FUNCTIONCALL (Ast.Var ID) HELP2	)
 	  (* Method Call *)
-	| ID DOT ID LEFTB HELP2 RIGHTB	 ( Ast.METHODCALL (Ast.Var ID) (Ast.Var ID) HELP2	)
-	| LVALUE DOT ID LEFTB HELP2 RIGHTB	 (Ast.METHODCALL LVALUE (Ast.Var ID) HELP2	)
+	| ID DOT ID LEFTB HELP2 RIGHTB	 ( Ast.METHODCALL1 (Ast.Var ID) (Ast.Var ID) HELP2	)
+	| LVALUE DOT ID LEFTB HELP2 RIGHTB	 (Ast.METHODCALL2 LVALUE (Ast.Var ID) HELP2	)
 	  (* Operations *)
 	| MINUS EXP				(Ast.Monominus EXP	)
 	| EXP PLUS 	EXP         	( Ast.PLUS 	EXP1 EXP2  )
@@ -80,10 +80,10 @@ EXP     : (* Literals *)
 	| EXP LTEQUAL 	EXP         	( Ast.LTEQUAL 	EXP1 EXP2  )
 	| EXP AND 	EXP         	( Ast.AND 	EXP1 EXP2  )
 	| EXP OR  	EXP         	( Ast.OR 	EXP1 EXP2  )
-	| LEFTB EXPS RIGHTB			(Ast.OpList EXPS	)
+	| LEFTB EXPS RIGHTB		(Ast.OpList EXPS	)
 	  (* Assignment *)
-	| ID COLONEQUAL EXP	%prec COLONEQUAL	 	( Ast.ASSIGNMENT (Ast.Var ID) EXP )
-	| LVALUE COLONEQUAL EXP	%prec COLONEQUAL	 	( Ast.ASSIGNMENT LVALUE EXP )
+	| ID COLONEQUAL EXP	%prec COLONEQUAL	 	( Ast.ASSIGNMENT1 (Ast.Var ID) EXP )
+	| LVALUE COLONEQUAL EXP	%prec COLONEQUAL	 	( Ast.ASSIGNMENT2 LVALUE EXP )
 	  (* Control structures *)
 	| IF EXP THEN EXP %prec IF	     		 ( Ast.IF EXP1 EXP2 )
 	| IF EXP THEN EXP ELSE EXP %prec ELSE		( Ast.ELSE EXP1 EXP2 EXP3)
@@ -100,10 +100,10 @@ HELP2 :   EXP		( EXP :: []  )
 	| EXP COMMA HELP2 ( EXP :: HELP2	)
 (* 34 *)
 
-LVALUE	: ID DOT ID	(Ast.LVALUE (Ast.Var ID) (Ast.Var ID))
-	| ID LEFTSB EXP RIGHTSB (Ast.LVALUE (Ast.Var ID) EXP)
-	| LVALUE DOT ID	(Ast.LVALUE LVALUE (Ast.Var ID))
-	| LVALUE LEFTSB	EXP RIGHTSB (Ast.LVALUE LVALUE EXP)
+LVALUE	: ID DOT ID	(Ast.LVALUE1 (Ast.Var ID) (Ast.Var ID))
+	| ID LEFTSB EXP RIGHTSB (Ast.LVALUE2 (Ast.Var ID) EXP)
+	| LVALUE DOT ID	(Ast.LVALUE3 LVALUE (Ast.Var ID))
+	| LVALUE LEFTSB	EXP RIGHTSB (Ast.LVALUE4 LVALUE EXP)
 
 (* 37 *)
 EXPS	: (* empty *)	( []	)
@@ -140,9 +140,9 @@ CLASSFIELD : (* Attribute declaration *)
 		  VAR ID COLON ID COLONEQUAL EXP	(Ast.ATTRDEC (Ast.Var ID) (Ast.Var ID) EXP )
 		| METHOD ID (Ast.Method (Ast.Var ID))
 (* 55 *)
-TY	: ID			( Ast.Var ID		)
+TY	: ID			( Ast.I2 (Ast.Var ID)	)
 	  (* Record type definition *)
-	| TYFIELD 			( TYFIELD )
+	| TYFIELD 			( Ast.T TYFIELD )
 	  (* Array type definition *)
 	| ARRAY OF ID		( Ast.ArrayDef (Ast.Var ID))
 	  (* Class definition canonical form *)
