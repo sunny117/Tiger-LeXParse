@@ -1,2 +1,5 @@
 *.lex.sml
+*.grm.desc
+*.grm.sig
+*.grm.sml
 tigh
