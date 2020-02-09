@@ -1,44 +1,65 @@
 structure Ast = struct
 
-datatype Exp   =  Nil
+datatype Program = Expr of Exp
+		| Decr of Dec list
+
+and Exp   	= Nil
 		| Const		of int
-		| Var		of string
 		| Quote		of string
-		| ArrayCreate	of Exp * Exp * Exp
-		| RecordCreate	of Exp * Exp
-		| Help11	of Exp * Exp
-		| Help12	of Exp * Exp * Exp
-		| New		of Exp
-		| FunctionCall	of Exp * Exp list
-		| MethodCall	of Exp * Exp * Exp list
-		| Lvalue	of Exp * Exp
+		| ArrayCreate	of Id * Exp * Exp
+		| RecordCreate	of Id * Help1
+		| New		of Id
+		| I1		of Id
+		| L		of Lvalue
+		| FunctionCall	of Id * Exp list
+		| MethodCall1	of Id * Id * Exp list
+		| MethodCall2	of Lvalue * Id * Exp list
 		| Monominus	of Exp
                 | Op         	of Exp * BinOp * Exp
 		| OpList	of Exp list
-		| Assignment 	of Exp * Exp
+		| Assignment1 	of Id * Exp
+		| Assignment2 	of Lvalue * Exp
 		| If 	     	of Exp * Exp
 		| Else       	of Exp * Exp * Exp
 		| While      	of Exp * Exp
-		| For 	     	of Exp * Exp * Exp * Exp
+		| For 	     	of Id * Exp * Exp * Exp
 		| Break
-		| Let        	of Exp list * Exp list
-		| TyDec		of Exp * Exp
-		| ClassAlt1	of Exp * Exp list
-		| ClassAlt2	of Exp * Exp * Exp list
-		| VarDec	of Exp * Exp
-		| FunDec1	of Exp * Exp * Exp
-		| FunDec2	of Exp * Exp * Exp * Exp
-		| PrimDec1	of Exp * Exp
-		| PrimDec2	of Exp * Exp * Exp
-		| Import	of Exp
-		| AttrDec	of Exp * Exp * Exp
-		| Method	of Exp
-		| ArrayDef	of Exp
-		| ClassCan	of Exp
-		| TyField1	of Exp * Exp
-		| TyField2	of Exp * Exp * Exp
+		| Let        	of Dec list * Exp list
 
-     and BinOp  = Plus
+and Id = Var of string
+
+and Help1 = 	Help11	of Id * Exp
+	      | Help12	of Id * Exp * Help1
+
+and Lvalue = Lvalue1 of Id * Id
+		| Lvalue2 of Id * Exp
+		| Lvalue3 of Lvalue * Id
+		| Lvalue4 of Lvalue * Exp
+
+ 	and Dec	= TyDec		of Id * Ty
+		| ClassAlt1	of Id * ClassField list
+		| ClassAlt2	of Id * Id * ClassField list
+		| VarDec	of Id * Exp
+		| FunDec1	of Id * TyField * Exp
+		| FunDec2	of Id * TyField * Id * Exp
+		| PrimDec1	of Id * TyField
+		| PrimDec2	of Id * TyField * Id
+		| Import	of Exp
+
+
+and ClassField =  AttrDec	of Id * Id * Exp
+		| Method	of Id
+
+and Ty		= I2		of Id
+		| ArrayDef	of Id
+		| T		of TyField
+		| ClassCan	of Id
+
+and TyField
+		= TyField1	of Id * Id
+		| TyField2	of Id * Id * TyField
+
+      and BinOp = Plus
                 | Minus
                 | Mul
 		| Div
@@ -57,9 +78,14 @@ fun HELP11		a b	= Help11 (a,b)
 fun HELP12		a b c	= Help12 (a,b,c)
 
 fun FUNCTIONCALL  	a b	= FunctionCall (a,b)
-fun METHODCALL		a b c	= MethodCall (a,b,c)
-fun LVALUE		a b	= Lvalue (a,b)
-fun ASSIGNMENT  	a b     = Assignment (a, b)
+fun METHODCALL1		a b c	= MethodCall1 (a,b,c)
+fun METHODCALL2		a b c	= MethodCall2 (a,b,c)
+fun LVALUE1		a b	= Lvalue1 (a,b)
+fun LVALUE2		a b	= Lvalue2 (a,b)
+fun LVALUE3		a b	= Lvalue3 (a,b)
+fun LVALUE4		a b	= Lvalue4 (a,b)
+fun ASSIGNMENT1  	a b     = Assignment1 (a, b)
+fun ASSIGNMENT2  	a b     = Assignment2 (a, b)
 
 fun IF 		a b     = If (a, b)
 fun ELSE 	a b c   = Else (a,b,c)
