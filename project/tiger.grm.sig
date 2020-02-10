@@ -2,7 +2,6 @@ signature EXP_TOKENS =
 sig
 type ('a,'b) token
 type svalue
-val QUOTE:  'a * 'a -> (svalue,'a) token
 val CONST: (int) *  'a * 'a -> (svalue,'a) token
 val STRING: (string) *  'a * 'a -> (svalue,'a) token
 val ID: (string) *  'a * 'a -> (svalue,'a) token

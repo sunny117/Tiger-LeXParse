@@ -38,11 +38,11 @@ str = [a-zA-Z];
 ws = [\ \t];
 
 %%
-
-[+-~]?{digit}+			=> (Tokens.CONST(toInt yytext, !lineRef, !lineRef));
-
 \n({ws}*\n)*			=> (lex());
 {ws}+				=> (lex());
+{digit}+			=> (Tokens.CONST(toInt yytext, !lineRef, !lineRef));
+
+
 
 "array"			=> (Tokens.ARRAY(!lineRef, !lineRef));
 "if"			=> (Tokens.IF(!lineRef,!lineRef));
@@ -71,6 +71,7 @@ ws = [\ \t];
 "new"			=> (Tokens.NEW(!lineRef,!lineRef));
 
 
+"\"".*"\""		=> (Tokens.STRING(yytext,!lineRef,!lineRef));
 ":="			=> (Tokens.COLONEQUAL(!lineRef,!lineRef));
 ","			=> (Tokens.COMMA(!lineRef,!lineRef));
 ":"			=> (Tokens.COLON(!lineRef,!lineRef));
@@ -94,7 +95,6 @@ ws = [\ \t];
 ">="			=> (Tokens.GTEQUAL(!lineRef,!lineRef));
 "&"			=> (Tokens.AND(!lineRef,!lineRef));
 "|"			=> (Tokens.OR(!lineRef,!lineRef));
-"\""			=> (Tokens.QUOTE(!lineRef,!lineRef));
 
 {str}+			=> (Tokens.ID(yytext,!lineRef,!lineRef));
 

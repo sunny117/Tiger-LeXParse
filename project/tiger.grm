@@ -14,7 +14,7 @@
 	(* Symbols *)
 	| COMMA | COLON | SEMICOLON | LEFTB | RIGHTB | LEFTSB | RIGHTSB | LEFTCB | RIGHTCB | DOT | PLUS | MINUS | MUL | DIV | EQUAL | LTGT | LT | LTEQUAL | GT | GTEQUAL | AND | OR | COLONEQUAL | EOF
 	(* EXTRAS *)
-	| ID of string | STRING of string | CONST of int | QUOTE
+	| ID of string | STRING of string | CONST of int
 	                            
 
 
@@ -51,7 +51,7 @@ PROGRAM : EXP	( Ast.Expr EXP  )
 EXP     : (* Literals *)
 	  NIL					 ( Ast.Nil		)
 	| CONST					 ( Ast.Const	CONST 	)
-	| QUOTE STRING QUOTE			( Ast.Quote STRING	)
+	| STRING			( Ast.Quote STRING	)
 
 	  (* Array and record creations *)
 	| ID LEFTSB EXP RIGHTSB OF EXP %prec ELSE	 (Ast.ARRAYCREATE (Ast.Var ID) EXP1 EXP2)
@@ -129,7 +129,7 @@ DEC	: (* Type declaration *)
 	| PRIMITIVE ID LEFTB TYFIELD RIGHTB	(Ast.PRIMDEC1 (Ast.Var ID) TYFIELD)
 	| PRIMITIVE ID LEFTB TYFIELD RIGHTB COLON ID(Ast.PRIMDEC2 (Ast.Var ID) TYFIELD (Ast.Var ID))
 	  (* Importing a set of declarations *)
-	| IMPORT QUOTE STRING QUOTE (Ast.Import (Ast.Quote STRING))
+	| IMPORT  STRING (Ast.Import (Ast.Quote STRING))
 (* 51 *)
 
 CLASSFIELDS : (* empty *)	( [] )

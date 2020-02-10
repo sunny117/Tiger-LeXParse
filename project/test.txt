@@ -1,13 +1,6 @@
-let
-  var a := 1
-in
-  a := (
-         print("first exp display\n");
-         print("second exp display\n");
-         a := a + 1;
-         a
-       ) + 42;
-  print("the last value of a is : ");
-  print_int(a);
-  print("\n")
-end
+let var a:=1 in a := (print("first exp displayn");
+print("second exp displayn");
+a := a + 1;a) + 42;
+print("the last value of a is  ");
+printint(a);
+print("n")end
