@@ -4,118 +4,149 @@
 %eop EOF
 %verbose
 %pure
-%name Expr
+%name EXP
 
-%term CONST of int
-    | VAR of string
-    | PLUS
-    | MINUS
-    | MUL
-    | DIV
-    | EOF
-    | SEMICOLON
-    | IF | THEN | ELSE | LET | IN | END | BREAK | ASSIGNMENT | FOR | TO | DO | WHILE | EQUAL
+%term 
+	(* Keywords *)
+	ARRAY | IF | THEN | ELSE | WHILE | FOR | TO | DO | LET | IN | END | OF | BREAK | NIL | FUNCTION | VAR | TYPE | IMPORT | PRIMITIVE 
+	(* ObjectKeywords *)
+	| CLASS | EXTENDS | METHOD | NEW
+	(* Symbols *)
+	| COMMA | COLON | SEMICOLON | LEFTB | RIGHTB | LEFTSB | RIGHTSB | LEFTCB | RIGHTCB | DOT | PLUS | MINUS | MUL | DIV | EQUAL | LTGT | LT | LTEQUAL | GT | GTEQUAL | AND | OR | COLONEQUAL | EOF
+	(* EXTRAS *)
+	| ID of string | STRING of string | CONST of int
+	                            
 
 
-%nonterm EXP     of Ast.Expr
-       | EXPS    of Ast.Expr list
-       | PROGRAM of Ast.Expr list
-       | EXPR 	 of Ast.Expr
-       | EQ	 of Ast.Expr	
+%nonterm  EXP     	of Ast.Exp
+        | EXPS    	of Ast.Exp list
+        | PROGRAM 	of Ast.Program
+	| HELP1   	of Ast.Help1
+	| HELP2   	of Ast.Exp list
+	| LVALUE	of Ast.Lvalue
+	| DECS		of Ast.Dec list
+	| DEC		of Ast.Dec
+	| CLASSFIELDS	of Ast.ClassField list
+	| CLASSFIELD	of Ast.ClassField
+	| TY		of Ast.Ty
+	| TYFIELD	of Ast.TyField
+
 
 %noshift EOF
-
+%nonassoc IF WHILE FOR COLONEQUAL
+%nonassoc ELSE
+%left OR
+%left AND
+%nonassoc EQUAL LTGT GT LT GTEQUAL LTEQUAL
 %left PLUS MINUS
 %left MUL DIV
-
 %pos int
 
 %%
 
-PROGRAM : EXPS                 ( EXPS )
+PROGRAM : EXP	( Ast.Expr EXP  )
+	| DECS  ( Ast.Decr DECS	)
 
-EXPS    : (* empty *)           ( []            )		
+(* 0 *)
+EXP     : (* Literals *)
+	  NIL					 ( Ast.Nil		)
+	| CONST					 ( Ast.Const	CONST 	)
+	| STRING			( Ast.Quote STRING	)
+
+	  (* Array and record creations *)
+	| ID LEFTSB EXP RIGHTSB OF EXP %prec ELSE	 (Ast.ARRAYCREATE (Ast.Var ID) EXP1 EXP2)
+	| ID LEFTCB HELP1 RIGHTCB 	 (Ast.RECORDCREATE (Ast.Var ID) HELP1)
+	  (* Object Creation *)
+	| NEW ID				 (Ast.New (Ast.Var ID)	)
+	  (* Variables, field, elements of an array *)
+	| ID					 ( Ast.I1 (Ast.Var ID)	)
+	| LVALUE				 ( Ast.L LVALUE	)
+	  (* Function call *)
+	| ID LEFTB HELP2 RIGHTB			 ( Ast.FUNCTIONCALL (Ast.Var ID) HELP2	)
+	  (* Method Call *)
+	| ID DOT ID LEFTB HELP2 RIGHTB	 ( Ast.METHODCALL1 (Ast.Var ID) (Ast.Var ID) HELP2	)
+	| LVALUE DOT ID LEFTB HELP2 RIGHTB	 (Ast.METHODCALL2 LVALUE (Ast.Var ID) HELP2	)
+	  (* Operations *)
+	| MINUS EXP				(Ast.Monominus EXP	)
+	| EXP PLUS 	EXP         	( Ast.PLUS 	EXP1 EXP2  )
+	| EXP MINUS 	EXP         	( Ast.MINUS 	EXP1 EXP2  )
+	| EXP MUL 	EXP         	( Ast.MUL 	EXP1 EXP2  )
+	| EXP DIV 	EXP         	( Ast.DIV 	EXP1 EXP2  )
+	| EXP EQUAL 	EXP         	( Ast.EQUAL 	EXP1 EXP2  )
+	| EXP LTGT 	EXP         	( Ast.LTGT 	EXP1 EXP2  )
+	| EXP GT 	EXP         	( Ast.GT 	EXP1 EXP2  )
+	| EXP LT 	EXP         	( Ast.LT 	EXP1 EXP2  )
+	| EXP GTEQUAL 	EXP         	( Ast.GTEQUAL 	EXP1 EXP2  )
+	| EXP LTEQUAL 	EXP         	( Ast.LTEQUAL 	EXP1 EXP2  )
+	| EXP AND 	EXP         	( Ast.AND 	EXP1 EXP2  )
+	| EXP OR  	EXP         	( Ast.OR 	EXP1 EXP2  )
+	| LEFTB EXPS RIGHTB		(Ast.OpList EXPS	)
+	  (* Assignment *)
+	| ID COLONEQUAL EXP	%prec COLONEQUAL	 	( Ast.ASSIGNMENT1 (Ast.Var ID) EXP )
+	| LVALUE COLONEQUAL EXP	%prec COLONEQUAL	 	( Ast.ASSIGNMENT2 LVALUE EXP )
+	  (* Control structures *)
+	| IF EXP THEN EXP %prec IF	     		 ( Ast.IF EXP1 EXP2 )
+	| IF EXP THEN EXP ELSE EXP %prec ELSE		( Ast.ELSE EXP1 EXP2 EXP3)
+	| WHILE EXP DO EXP %prec WHILE		 ( Ast.WHILE  EXP1 EXP2 	)
+	| FOR ID COLONEQUAL EXP TO EXP DO EXP %prec FOR  ( Ast.FOR (Ast.Var ID) EXP1 EXP2 EXP3 )
+	| BREAK					 ( Ast.Break	 )
+	| LET DECS IN EXPS END			 ( Ast.LET  DECS EXPS )
+	
+(* 30 *)
+HELP1 :   ID EQUAL EXP  (Ast.HELP11 (Ast.Var ID ) EXP )
+	| ID EQUAL EXP COMMA HELP1 (Ast.HELP12 (Ast.Var ID ) EXP HELP1 )
+(* 32 *)
+HELP2 :   EXP		( EXP :: []  )
+	| EXP COMMA HELP2 ( EXP :: HELP2	)
+(* 34 *)
+
+LVALUE	: ID DOT ID	(Ast.LVALUE1 (Ast.Var ID) (Ast.Var ID))
+	| ID LEFTSB EXP RIGHTSB (Ast.LVALUE2 (Ast.Var ID) EXP)
+	| LVALUE DOT ID	(Ast.LVALUE3 LVALUE (Ast.Var ID))
+	| LVALUE LEFTSB	EXP RIGHTSB (Ast.LVALUE4 LVALUE EXP)
+
+(* 37 *)
+EXPS	: (* empty *)	( []	)
+	| EXP		( EXP :: []	)
 	| EXP SEMICOLON EXPS	( EXP :: EXPS	)
-	| EXP EXPS		( EXP :: EXPS	)
 
-EXP     : IF EQ THEN EXPR     		( Ast.IF EQ EXPR )
-	| ELSE EXP	       		( Ast.ELSE  EXP )
-	| LET EXPS IN EXPS END		( Ast.LET EXPS1 EXPS2 )
-	| BREAK				( Ast.Break	)
-	| VAR ASSIGNMENT EXPR		( Ast.ASSIGNMENT (Ast.Var VAR) EXPR)
-	| FOR VAR ASSIGNMENT EXPR TO EXPR DO EXP (Ast.FOR (Ast.Var VAR) EXPR1 EXPR2 EXP)
-	| WHILE EQ DO EXP		( Ast.WHILE EQ EXP )
+(* 40 *)
+DECS	: (*empty*)	( []	)
+	| DEC DECS	( DEC :: DECS	)
 
-EXPR	: CONST                		( Ast.Const CONST 	)
-	| VAR				( Ast.Var VAR 		)
-        | EXPR PLUS EXPR         	( Ast.plus  EXPR1 EXPR2 )
-	| EXPR MINUS EXPR        	( Ast.minus EXPR1 EXPR2 )
-	| EXPR MUL   EXPR        	( Ast.mul   EXPR1 EXPR2 )
-	| EXPR DIV   EXPR        	( Ast.div   EXPR1 EXPR2 )
+(* 42 *)
+DEC	: (* Type declaration *)
+	  TYPE ID EQUAL TY	(Ast.TYDEC (Ast.Var ID) TY	)
+	  (* Class definition (alternative form) *)
+	| CLASS ID LEFTCB CLASSFIELDS RIGHTCB	(Ast.CLASSALT1 (Ast.Var ID) CLASSFIELDS	)
+	| CLASS ID EXTENDS ID LEFTCB CLASSFIELDS RIGHTCB	(Ast.CLASSALT2 (Ast.Var ID) (Ast.Var ID) CLASSFIELDS	)
+	  (* Variable declaration *)
+	| VAR ID COLONEQUAL EXP	(Ast.VARDEC (Ast.Var ID) EXP	)
+	  (* Function declaration *)
+	| FUNCTION ID LEFTB TYFIELD RIGHTB EQUAL EXP	 ( Ast.FUNDEC1 (Ast.Var ID) TYFIELD EXP )
+	| FUNCTION ID LEFTB TYFIELD RIGHTB COLON ID EQUAL EXP ( Ast.FUNDEC2 (Ast.Var ID) TYFIELD (Ast.Var ID) EXP )
+	  (* Primitive declaration *)
+	| PRIMITIVE ID LEFTB TYFIELD RIGHTB	(Ast.PRIMDEC1 (Ast.Var ID) TYFIELD)
+	| PRIMITIVE ID LEFTB TYFIELD RIGHTB COLON ID(Ast.PRIMDEC2 (Ast.Var ID) TYFIELD (Ast.Var ID))
+	  (* Importing a set of declarations *)
+	| IMPORT  STRING (Ast.Import (Ast.Quote STRING))
+(* 51 *)
 
-EQ	: EXPR EQUAL EXPR		(Ast.EQUAL EXPR1 EXPR2)
+CLASSFIELDS : (* empty *)	( [] )
+	| CLASSFIELD CLASSFIELDS	(CLASSFIELD :: CLASSFIELDS)
 
-(*
-program ::=
-    exp
-  | decs
-
-exp ::=
-    nil
-  | integer
-  | string
-  | type-id [ exp ] of exp
-  | type-id {[ id = exp { , id = exp } ] }
-  | new type-id
-  | lvalue
-  | id ( [ exp { , exp }] )
-  | lvalue . id ( [ exp { , exp }] )
-  | - exp
-  | exp op exp
-  | ( exps )
-  | lvalue := exp
-  | if exp then exp [else exp]
-  | while exp do exp
-  | for id := exp to exp do exp
-  | break
-  | let decs in exps end
-
-lvalue ::= id
-  | lvalue . id
-  | lvalue [ exp ]
-
-exps ::= [ exp { ; exp } ]
-
-decs ::= { dec }
-
-dec ::=
-    type id = ty
-  | class id [ extends type-id ] { classfields }
-  | vardec
-  | function id ( tyfields ) [ : type-id ] = exp
-  | primitive id ( tyfields ) [ : type-id ]
-  | import string
-
-
-vardec ::= var id [ : type-id ] := exp
-
-
-classfields ::= { classfield }
-
-classfield ::=
-    vardec
-  | method id ( tyfields ) [ : type-id ] = exp
-
-ty ::=
-     type-id
-   | { tyfields  }
-   | array of type-id
-   | class [ extends type-id ] { classfields }
-
-tyfields ::= [ id : type-id { , id : type-id } ]
-
-type-id ::= id
-
-op ::= + | - | * | / | = | <> | > | < | >= | <= | & | |
-*)
-
+(* 53 *)
+CLASSFIELD : (* Attribute declaration *)
+		  VAR ID COLON ID COLONEQUAL EXP	(Ast.ATTRDEC (Ast.Var ID) (Ast.Var ID) EXP )
+		| METHOD ID (Ast.Method (Ast.Var ID))
+(* 55 *)
+TY	: ID			( Ast.I2 (Ast.Var ID)	)
+	  (* Record type definition *)
+	| TYFIELD 			( Ast.T TYFIELD )
+	  (* Array type definition *)
+	| ARRAY OF ID		( Ast.ArrayDef (Ast.Var ID))
+	  (* Class definition canonical form *)
+	| CLASS EXTENDS ID  (Ast.ClassCan (Ast.Var ID))
+(* 60 *)
+TYFIELD:  ID COLON ID			( Ast.TYFIELD1 (Ast.Var ID) (Ast.Var ID)     )
+	| ID COLON ID COMMA TYFIELD	( Ast.TYFIELD2 (Ast.Var ID) (Ast.Var ID) TYFIELD ) 

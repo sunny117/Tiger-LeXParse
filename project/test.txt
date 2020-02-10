@@ -1,1 +1,6 @@
-x:=2+4;y:=v+f;if x=a then x+y*2 ;for a:=2 to k do if x=a then x+y;let a:=2 a:=3 in b:=2 b:=3 while x=2 do x:=2 let x:=2 y:=3 in a:=x+y while x=2 do x:=2323 for a:=2 to k do if x=a then x+y; end end;while x=2 do x:=2;
+let var a:=1 in a := (print("first exp displayn");
+print("second exp displayn");
+a := a + 1;a) + 42;
+print("the last value of a is  ");
+printint(a);
+print("n")end

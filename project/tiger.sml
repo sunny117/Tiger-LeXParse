@@ -1,18 +1,18 @@
 structure TIGER =
 struct
 
-structure ExprLrVals = ExprLrValsFun(structure Token = LrParser.Token)
-structure ExprLex    = ExprLexFun(structure Tokens = ExprLrVals.Tokens)
-structure ExprParser = Join( structure ParserData = ExprLrVals.ParserData
-			     structure Lex        = ExprLex
+structure EXPLrVals = EXPLrValsFun(structure Token = LrParser.Token)
+structure EXPLex    = EXPLexFun(structure Tokens = EXPLrVals.Tokens)
+structure EXPParser = Join( structure ParserData = EXPLrVals.ParserData
+			     structure Lex        = EXPLex
 			     structure LrParser   = LrParser
 			   )
 
-fun makeExprLexer strm = ExprParser.makeLexer (fn n => TextIO.inputN(strm,n))
-val makeFileLexer      = makeExprLexer o TextIO.openIn
+fun makeEXPLexer strm = EXPParser.makeLexer (fn n => TextIO.inputN(strm,n))
+val makeFileLexer      = makeEXPLexer o TextIO.openIn
 
 val thisLexer = case CommandLine.arguments() of
-		    []  => makeExprLexer TextIO.stdIn
+		    []  => makeEXPLexer TextIO.stdIn
 		 |  [x] => makeFileLexer x
 		 |  _   => (TextIO.output(TextIO.stdErr, "usage: ec file"); OS.Process.exit OS.Process.failure)
 
@@ -21,8 +21,8 @@ val thisLexer = case CommandLine.arguments() of
 fun print_error (s,i:int,_) = TextIO.output(TextIO.stdErr,
 					    "Error, line " ^ (Int.toString i) ^ ", " ^ s ^ "\n")
 
-val (program,_) = ExprParser.parse (0,thisLexer,print_error,())
-val executable  = Indent.indentlist 0 program
+val (program,_) = EXPParser.parse (0,thisLexer,print_error,())
+val executable  = Indent.Pr 0 program
 val _           = TextIO.output(TextIO.stdOut,executable)
 
 end
