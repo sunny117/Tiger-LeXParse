@@ -47,16 +47,20 @@ and Lvalue = Lvalue1 of Id * Id
 		| Import	of Exp
 
 
-and ClassField =  AttrDec	of Id * Id * Exp
-		| Method	of Id
+and ClassField =  AttrDec1	of Id * Id * Exp
+		| AttrDec2	of Id * Exp
+		| Method1	of Id * TyField * Id * Exp
+		| Method2	of Id * TyField * Exp
 
 and Ty		= I2		of Id
 		| ArrayDef	of Id
-		| T		of TyField
-		| ClassCan	of Id
+		| Ty1		of Id * Id
+		| Ty2		of Id * Id * TyField
+		| ClassCan1	of ClassField list
+		| ClassCan2	of Id * ClassField list
 
-and TyField
-		= TyField1	of Id * Id
+and TyField	= Empty
+		| TyField1	of Id * Id
 		| TyField2	of Id * Id * TyField
 
       and BinOp = Plus
@@ -71,6 +75,15 @@ and TyField
 		| Ltequal
 		| And
 		| Or
+
+fun ATTRDEC1	a b c	= AttrDec1 (a,b,c)
+fun ATTRDEC2	a b 	= AttrDec2 (a,b)
+
+fun METHOD1	a b c d	= Method1 (a,b,c,d)
+fun METHOD2	a b c	= Method2 (a,b,c)
+
+fun TY1	a b	= Ty1 (a,b)
+fun TY2 a b c	= Ty2 (a,b,c)
 
 fun ARRAYCREATE		a b c	= ArrayCreate (a,b,c)
 fun RECORDCREATE	a b	= RecordCreate (a,b)
@@ -112,9 +125,10 @@ fun CLASSALT2	a b c	= ClassAlt2 (a,b,c)
 fun VARDEC	a b	= VarDec (a,b)
 fun FUNDEC1	a b c	= FunDec1 (a,b,c)
 fun FUNDEC2	a b c d	= FunDec2 (a,b,c,d)
-fun ATTRDEC	a b c	= AttrDec (a,b,c)
 fun PRIMDEC1	a b	= PrimDec1 (a,b)
 fun PRIMDEC2	a b c	= PrimDec2 (a,b,c)
+
+fun CLASSCAN2	a b	= ClassCan2 (a,b)
 
 fun TYFIELD1	a b	= TyField1 (a,b)
 fun TYFIELD2	a b c	= TyField2 (a,b,c)

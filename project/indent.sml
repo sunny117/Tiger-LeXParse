@@ -39,7 +39,7 @@ fun E s (Ast.Nil)		= (P s)^"nil\n"
   | E s (Ast.While (a,b))		= (P s) ^ "while " ^ (E s a) ^ " do\n" ^ (E (s+2) b)^"\n"
   | E s (Ast.For (a,b,c,d))    		= (P s) ^ "for" ^ (Id s a) ^ " := " ^ (E s b) ^ " to " ^ (E s c) ^ " do\n" ^ (E (s+2) d)^"\n"
   | E s (Ast.Break )			= (P s) ^ "break\n"
-  | E s (Ast.Let (a,b))			= (P s) ^ "let " ^ (DS s a)^(P s)^"in\n"^(ES (s+2) b) ^ (P s) ^ "\nend\n"
+  | E s (Ast.Let (a,b))			= (P s) ^ "let\n " ^ (DS s a)^(P s)^"in\n"^(ES (s+2) b) ^ (P s) ^ "\nend\n"
   
 and Id s (Ast.Var a) = a
 
@@ -70,26 +70,30 @@ and D s (Ast.TyDec (a,b))	= "type "^(Id s a)^"="^(TY s b)^"\n"
   | D s (Ast.ClassAlt1 (a,b))	= "class "^(Id s a)^"{"^(CFS s b)^"}\n"
   | D s (Ast.ClassAlt2 (a,b,c))	= "class "^(Id s a)^"extends"^(Id s b)^"{"^(CFS s c)^"}\n"
   | D s (Ast.VarDec (a,b))	= "var "^(Id s a)^":="^(E s b)^"\n"
-  | D s (Ast.FunDec1 (a,b,c))	= "function"^(Id s a)^"("^(TYF s b)^")"^"="^(E s c)^"\n"
-  | D s (Ast.FunDec2 (a,b,c,d))	= "function"^(Id s a)^"("^(TYF s b)^")"^":"^(Id s c)^"="^(E s d)^"\n"
-  | D s (Ast.PrimDec1 (a,b))	= "primitive"^(Id s a)^"("^(TYF s b)^")\n"
-  | D s (Ast.PrimDec2 (a,b,c))	= "primitive"^(Id s a)^"("^(TYF s b)^")"^":"^(Id s c)^"\n"
+  | D s (Ast.FunDec1 (a,b,c))	= "function "^(Id s a)^"("^(TYF s b)^")"^"="^(E s c)^"\n"
+  | D s (Ast.FunDec2 (a,b,c,d))	= "function "^(Id s a)^"("^(TYF s b)^")"^":"^(Id s c)^"="^(E s d)^"\n"
+  | D s (Ast.PrimDec1 (a,b))	= "primitive "^(Id s a)^"("^(TYF s b)^")\n"
+  | D s (Ast.PrimDec2 (a,b,c))	= "primitive "^(Id s a)^"("^(TYF s b)^")"^":"^(Id s c)^"\n"
   | D s (Ast.Import a)		= "import "^"\""^(E s a)^"\""^"\n"
   
 and CFS s [] = ""
  | CFS s (a :: []) = (CF s a)
  | CFS s (a :: xs) = (CF s a)^(CFS s xs)
 
-and CF s (Ast.AttrDec (a,b,c))	= (P s)^"var "^(Id s a)^":"^(Id s b)^":="^(E s c)^"\n"
-  | CF s (Ast.Method a)		= (P s)^"method "^(Id s a)^"\n"
+and CF s (Ast.AttrDec1 (a,b,c))	= (P s)^"var "^(Id s a)^":"^(Id s b)^":="^(E s c)^"\n"
+  | CF s (Ast.Method1 (a,b,c,d))= (P s)^"method "^(Id s a)^" ( "^(TYF s b)^") :"^(Id s c)^"="^(E s d)^"\n"
+  | CF s (Ast.AttrDec2 (a,b))	= (P s)^"var "^(Id s a)^":="^(E s b)^"\n"
+  | CF s (Ast.Method2 (a,b,c))	= (P s)^"method "^(Id s a)^" ( "^(TYF s b)^") "^"="^(E s c)^"\n"
   
 and TY s (Ast.I2 (Ast.Var a))		=  a
-  | TY s (Ast.T (Ast.TyField1 (a,b)))	= (Id s a)^":"^(Id s b)
-  | TY s (Ast.T (Ast.TyField2 (a,b,c)))	= (Id s a)^":"^(Id s b)^","^(TYF s c)
+  | TY s (Ast.Ty1 (a,b))	= (Id s a)^":"^(Id s b)
+  | TY s (Ast.Ty2 (a,b,c))	= (Id s a)^":"^(Id s b)^","^(TYF s c)
   | TY s (Ast.ArrayDef a)	= (P s)^"array of "^(Id s a)
-  | TY s (Ast.ClassCan a)	= (P s)^"class extends "^(Id s a)
+  | TY s (Ast.ClassCan1 a)	= (P s)^"class {\n"^(CFS s a)^"}\n"
+  | TY s (Ast.ClassCan2 (a,b))	= (P s)^"class extends "^(Id s a)^"{\n"^(CFS s b)^"}\n"
 
-and TYF s (Ast.TyField1 (a,b))	= (Id s a)^":"^(Id s b)
+and TYF s (Ast.Empty	)	= ""
+  | TYF s (Ast.TyField1 (a,b))	= (Id s a)^":"^(Id s b)
   | TYF s (Ast.TyField2 (a,b,c))= (Id s a)^":"^(Id s b)^","^(TYF s c)
 
 

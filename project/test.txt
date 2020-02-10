@@ -1,6 +1,17 @@
-let var a:=1 in a := (print("first exp displayn");
-print("second exp displayn");
-a := a + 1;a) + 42;
-print("the last value of a is  ");
-printint(a);
-print("n")end
+let
+  type C = class
+  {
+    var a := 51
+    var b := self             
+     method m () : int =
+      let
+        function f () : int =
+          self.a             
+      in
+        f() + self.a          
+      end
+  }
+  var a := new C
+in
+  a := self                   
+end
