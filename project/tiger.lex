@@ -34,7 +34,7 @@ val newlineCount = List.length o List.filter (fn x => x = #"\n") o String.explod
 
 %header (functor EXPLexFun(structure Tokens : EXP_TOKENS));
 digit = [0-9];
-str = [a-zA-Z];
+str = [a-zA-Z][a-zA-Z0-9_]*;
 ws = [\ \t];
 
 %%
@@ -96,5 +96,6 @@ ws = [\ \t];
 "&"			=> (Tokens.AND(!lineRef,!lineRef));
 "|"			=> (Tokens.OR(!lineRef,!lineRef));
 
-{str}+			=> (Tokens.ID(yytext,!lineRef,!lineRef));
+{str}			=> (Tokens.ID(yytext,!lineRef,!lineRef));
+_			=> (Tokens.STRING(yytext,!lineRef,!lineRef));
 

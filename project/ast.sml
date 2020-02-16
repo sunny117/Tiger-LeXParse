@@ -39,7 +39,8 @@ and Lvalue = Lvalue1 of Id * Id
  	and Dec	= TyDec		of Id * Ty
 		| ClassAlt1	of Id * ClassField list
 		| ClassAlt2	of Id * Id * ClassField list
-		| VarDec	of Id * Exp
+		| VarDec1	of Id * Exp
+		| VarDec2	of Id * Id * Exp
 		| FunDec1	of Id * TyField * Exp
 		| FunDec2	of Id * TyField * Id * Exp
 		| PrimDec1	of Id * TyField
@@ -122,7 +123,8 @@ fun OR      a b = Op (a, Or, b)
 fun TYDEC	a b	= TyDec (a,b)
 fun CLASSALT1	a b	= ClassAlt1 (a,b)
 fun CLASSALT2	a b c	= ClassAlt2 (a,b,c)
-fun VARDEC	a b	= VarDec (a,b)
+fun VARDEC1	a b	= VarDec1 (a,b)
+fun VARDEC2	a b c	= VarDec2 (a,b,c)
 fun FUNDEC1	a b c	= FunDec1 (a,b,c)
 fun FUNDEC2	a b c d	= FunDec2 (a,b,c,d)
 fun PRIMDEC1	a b	= PrimDec1 (a,b)

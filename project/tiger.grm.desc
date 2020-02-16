@@ -24,7 +24,7 @@ state 0:
 	CONST	shift 5
 
 	EXP	goto 4
-	PROGRAM	goto 185
+	PROGRAM	goto 189
 	LVALUE	goto 3
 	DECS	goto 2
 	DEC	goto 1
@@ -248,6 +248,7 @@ state 14:
 state 15:
 
 	DEC : VAR . ID COLONEQUAL EXP 
+	DEC : VAR . ID COLON ID COLONEQUAL EXP 
 
 	ID	shift 52
 
@@ -895,11 +896,11 @@ state 49:
 
 state 50:
 
-	DEC : IMPORT STRING .  (reduce by rule 57)
+	DEC : IMPORT STRING .  (reduce by rule 58)
 
 
 
-	.	reduce by rule 57
+	.	reduce by rule 58
 
 
 state 51:
@@ -915,7 +916,9 @@ state 51:
 state 52:
 
 	DEC : VAR ID . COLONEQUAL EXP 
+	DEC : VAR ID . COLON ID COLONEQUAL EXP 
 
+	COLON	shift 87
 	COLONEQUAL	shift 86
 
 
@@ -927,7 +930,7 @@ state 53:
 	DEC : FUNCTION ID . LEFTB TYFIELD RIGHTB EQUAL EXP 
 	DEC : FUNCTION ID . LEFTB TYFIELD RIGHTB COLON ID EQUAL EXP 
 
-	LEFTB	shift 87
+	LEFTB	shift 88
 
 
 	.	error
@@ -937,7 +940,7 @@ state 54:
 
 	EXP : LET DECS . IN EXPS END 
 
-	IN	shift 88
+	IN	shift 89
 
 
 	.	error
@@ -947,7 +950,7 @@ state 55:
 
 	EXP : FOR ID . COLONEQUAL EXP TO EXP DO EXP 
 
-	COLONEQUAL	shift 89
+	COLONEQUAL	shift 90
 
 
 	.	error
@@ -969,7 +972,7 @@ state 56:
 	EXP : EXP . OR EXP 
 	EXP : WHILE EXP . DO EXP 
 
-	DO	shift 90
+	DO	shift 91
 	PLUS	shift 38
 	MINUS	shift 37
 	MUL	shift 36
@@ -1004,7 +1007,7 @@ state 57:
 	EXP : IF EXP . THEN EXP 
 	EXP : IF EXP . THEN EXP ELSE EXP 
 
-	THEN	shift 91
+	THEN	shift 92
 	PLUS	shift 38
 	MINUS	shift 37
 	MUL	shift 36
@@ -1060,7 +1063,7 @@ state 59:
 	EXP : LVALUE DOT ID . LEFTB HELP2 RIGHTB 
 	LVALUE : LVALUE DOT ID .  (reduce by rule 42)
 
-	LEFTB	shift 92
+	LEFTB	shift 93
 
 
 	.	reduce by rule 42
@@ -1082,7 +1085,7 @@ state 60:
 	EXP : EXP . OR EXP 
 	LVALUE : LVALUE LEFTSB EXP . RIGHTSB 
 
-	RIGHTSB	shift 93
+	RIGHTSB	shift 94
 	PLUS	shift 38
 	MINUS	shift 37
 	MUL	shift 36
@@ -1565,7 +1568,7 @@ state 74:
 	EXP : ID DOT ID . LEFTB HELP2 RIGHTB 
 	LVALUE : ID DOT ID .  (reduce by rule 40)
 
-	LEFTB	shift 94
+	LEFTB	shift 95
 
 
 	.	reduce by rule 40
@@ -1575,7 +1578,7 @@ state 75:
 
 	EXP : ID LEFTCB HELP1 . RIGHTCB 
 
-	RIGHTCB	shift 95
+	RIGHTCB	shift 96
 
 
 	.	error
@@ -1586,7 +1589,7 @@ state 76:
 	HELP1 : ID . EQUAL EXP 
 	HELP1 : ID . EQUAL EXP COMMA HELP1 
 
-	EQUAL	shift 96
+	EQUAL	shift 97
 
 
 	.	error
@@ -1609,7 +1612,7 @@ state 77:
 	EXP : EXP . OR EXP 
 	LVALUE : ID LEFTSB EXP . RIGHTSB 
 
-	RIGHTSB	shift 97
+	RIGHTSB	shift 98
 	PLUS	shift 38
 	MINUS	shift 37
 	MUL	shift 36
@@ -1631,7 +1634,7 @@ state 78:
 
 	EXP : ID LEFTB HELP2 . RIGHTB 
 
-	RIGHTB	shift 98
+	RIGHTB	shift 99
 
 
 	.	error
@@ -1654,7 +1657,7 @@ state 79:
 	HELP2 : EXP .  (reduce by rule 38)
 	HELP2 : EXP . COMMA HELP2 
 
-	COMMA	shift 99
+	COMMA	shift 100
 	PLUS	shift 38
 	MINUS	shift 37
 	MUL	shift 36
@@ -1699,7 +1702,7 @@ state 81:
 	CONST	shift 5
 
 	EXP	goto 46
-	EXPS	goto 100
+	EXPS	goto 101
 	LVALUE	goto 3
 
 	.	reduce by rule 44
@@ -1709,20 +1712,20 @@ state 82:
 
 	DEC : CLASS ID LEFTCB . CLASSFIELDS RIGHTCB 
 
-	VAR	shift 104
-	METHOD	shift 103
+	VAR	shift 105
+	METHOD	shift 104
 
-	CLASSFIELDS	goto 102
-	CLASSFIELD	goto 101
+	CLASSFIELDS	goto 103
+	CLASSFIELD	goto 102
 
-	.	reduce by rule 58
+	.	reduce by rule 59
 
 
 state 83:
 
 	DEC : CLASS ID EXTENDS . ID LEFTCB CLASSFIELDS RIGHTCB 
 
-	ID	shift 105
+	ID	shift 106
 
 
 	.	error
@@ -1733,22 +1736,22 @@ state 84:
 	DEC : PRIMITIVE ID LEFTB . TYFIELD RIGHTB 
 	DEC : PRIMITIVE ID LEFTB . TYFIELD RIGHTB COLON ID 
 
-	ID	shift 107
+	ID	shift 108
 
-	TYFIELD	goto 106
+	TYFIELD	goto 107
 
-	.	reduce by rule 70
+	.	reduce by rule 71
 
 
 state 85:
 
 	DEC : TYPE ID EQUAL . TY 
 
-	ARRAY	shift 111
-	CLASS	shift 110
-	ID	shift 109
+	ARRAY	shift 112
+	CLASS	shift 111
+	ID	shift 110
 
-	TY	goto 108
+	TY	goto 109
 
 	.	error
 
@@ -1770,7 +1773,7 @@ state 86:
 	STRING	shift 6
 	CONST	shift 5
 
-	EXP	goto 112
+	EXP	goto 113
 	LVALUE	goto 3
 
 	.	error
@@ -1778,17 +1781,27 @@ state 86:
 
 state 87:
 
-	DEC : FUNCTION ID LEFTB . TYFIELD RIGHTB EQUAL EXP 
-	DEC : FUNCTION ID LEFTB . TYFIELD RIGHTB COLON ID EQUAL EXP 
+	DEC : VAR ID COLON . ID COLONEQUAL EXP 
 
-	ID	shift 107
+	ID	shift 114
 
-	TYFIELD	goto 113
 
-	.	reduce by rule 70
+	.	error
 
 
 state 88:
+
+	DEC : FUNCTION ID LEFTB . TYFIELD RIGHTB EQUAL EXP 
+	DEC : FUNCTION ID LEFTB . TYFIELD RIGHTB COLON ID EQUAL EXP 
+
+	ID	shift 108
+
+	TYFIELD	goto 115
+
+	.	reduce by rule 71
+
+
+state 89:
 
 	EXP : LET DECS IN . EXPS END 
 
@@ -1806,62 +1819,15 @@ state 88:
 	CONST	shift 5
 
 	EXP	goto 46
-	EXPS	goto 114
+	EXPS	goto 116
 	LVALUE	goto 3
 
 	.	reduce by rule 44
 
 
-state 89:
-
-	EXP : FOR ID COLONEQUAL . EXP TO EXP DO EXP 
-
-	IF	shift 22
-	WHILE	shift 21
-	FOR	shift 20
-	LET	shift 19
-	BREAK	shift 18
-	NIL	shift 17
-	NEW	shift 10
-	LEFTB	shift 9
-	MINUS	shift 8
-	ID	shift 7
-	STRING	shift 6
-	CONST	shift 5
-
-	EXP	goto 115
-	LVALUE	goto 3
-
-	.	error
-
-
 state 90:
 
-	EXP : WHILE EXP DO . EXP 
-
-	IF	shift 22
-	WHILE	shift 21
-	FOR	shift 20
-	LET	shift 19
-	BREAK	shift 18
-	NIL	shift 17
-	NEW	shift 10
-	LEFTB	shift 9
-	MINUS	shift 8
-	ID	shift 7
-	STRING	shift 6
-	CONST	shift 5
-
-	EXP	goto 116
-	LVALUE	goto 3
-
-	.	error
-
-
-state 91:
-
-	EXP : IF EXP THEN . EXP 
-	EXP : IF EXP THEN . EXP ELSE EXP 
+	EXP : FOR ID COLONEQUAL . EXP TO EXP DO EXP 
 
 	IF	shift 22
 	WHILE	shift 21
@@ -1882,7 +1848,54 @@ state 91:
 	.	error
 
 
+state 91:
+
+	EXP : WHILE EXP DO . EXP 
+
+	IF	shift 22
+	WHILE	shift 21
+	FOR	shift 20
+	LET	shift 19
+	BREAK	shift 18
+	NIL	shift 17
+	NEW	shift 10
+	LEFTB	shift 9
+	MINUS	shift 8
+	ID	shift 7
+	STRING	shift 6
+	CONST	shift 5
+
+	EXP	goto 118
+	LVALUE	goto 3
+
+	.	error
+
+
 state 92:
+
+	EXP : IF EXP THEN . EXP 
+	EXP : IF EXP THEN . EXP ELSE EXP 
+
+	IF	shift 22
+	WHILE	shift 21
+	FOR	shift 20
+	LET	shift 19
+	BREAK	shift 18
+	NIL	shift 17
+	NEW	shift 10
+	LEFTB	shift 9
+	MINUS	shift 8
+	ID	shift 7
+	STRING	shift 6
+	CONST	shift 5
+
+	EXP	goto 119
+	LVALUE	goto 3
+
+	.	error
+
+
+state 93:
 
 	EXP : LVALUE DOT ID LEFTB . HELP2 RIGHTB 
 
@@ -1900,13 +1913,13 @@ state 92:
 	CONST	shift 5
 
 	EXP	goto 79
-	HELP2	goto 118
+	HELP2	goto 120
 	LVALUE	goto 3
 
 	.	reduce by rule 37
 
 
-state 93:
+state 94:
 
 	LVALUE : LVALUE LEFTSB EXP RIGHTSB .  (reduce by rule 43)
 
@@ -1915,7 +1928,7 @@ state 93:
 	.	reduce by rule 43
 
 
-state 94:
+state 95:
 
 	EXP : ID DOT ID LEFTB . HELP2 RIGHTB 
 
@@ -1933,13 +1946,13 @@ state 94:
 	CONST	shift 5
 
 	EXP	goto 79
-	HELP2	goto 119
+	HELP2	goto 121
 	LVALUE	goto 3
 
 	.	reduce by rule 37
 
 
-state 95:
+state 96:
 
 	EXP : ID LEFTCB HELP1 RIGHTCB .  (reduce by rule 6)
 
@@ -1948,7 +1961,7 @@ state 95:
 	.	reduce by rule 6
 
 
-state 96:
+state 97:
 
 	HELP1 : ID EQUAL . EXP 
 	HELP1 : ID EQUAL . EXP COMMA HELP1 
@@ -1966,24 +1979,24 @@ state 96:
 	STRING	shift 6
 	CONST	shift 5
 
-	EXP	goto 120
+	EXP	goto 122
 	LVALUE	goto 3
 
 	.	error
 
 
-state 97:
+state 98:
 
 	EXP : ID LEFTSB EXP RIGHTSB . OF EXP 
 	LVALUE : ID LEFTSB EXP RIGHTSB .  (reduce by rule 41)
 
-	OF	shift 121
+	OF	shift 123
 
 
 	.	reduce by rule 41
 
 
-state 98:
+state 99:
 
 	EXP : ID LEFTB HELP2 RIGHTB .  (reduce by rule 10)
 
@@ -1992,7 +2005,7 @@ state 98:
 	.	reduce by rule 10
 
 
-state 99:
+state 100:
 
 	HELP2 : EXP COMMA . HELP2 
 
@@ -2010,13 +2023,13 @@ state 99:
 	CONST	shift 5
 
 	EXP	goto 79
-	HELP2	goto 122
+	HELP2	goto 124
 	LVALUE	goto 3
 
 	.	reduce by rule 37
 
 
-state 100:
+state 101:
 
 	EXPS : EXP SEMICOLON EXPS .  (reduce by rule 46)
 
@@ -2025,35 +2038,24 @@ state 100:
 	.	reduce by rule 46
 
 
-state 101:
+state 102:
 
 	CLASSFIELDS : CLASSFIELD . CLASSFIELDS 
 
-	VAR	shift 104
-	METHOD	shift 103
+	VAR	shift 105
+	METHOD	shift 104
 
-	CLASSFIELDS	goto 123
-	CLASSFIELD	goto 101
+	CLASSFIELDS	goto 125
+	CLASSFIELD	goto 102
 
-	.	reduce by rule 58
-
-
-state 102:
-
-	DEC : CLASS ID LEFTCB CLASSFIELDS . RIGHTCB 
-
-	RIGHTCB	shift 124
-
-
-	.	error
+	.	reduce by rule 59
 
 
 state 103:
 
-	CLASSFIELD : METHOD . ID LEFTB TYFIELD RIGHTB COLON ID EQUAL EXP 
-	CLASSFIELD : METHOD . ID LEFTB TYFIELD RIGHTB EQUAL EXP 
+	DEC : CLASS ID LEFTCB CLASSFIELDS . RIGHTCB 
 
-	ID	shift 125
+	RIGHTCB	shift 126
 
 
 	.	error
@@ -2061,10 +2063,10 @@ state 103:
 
 state 104:
 
-	CLASSFIELD : VAR . ID COLON ID COLONEQUAL EXP 
-	CLASSFIELD : VAR . ID COLONEQUAL EXP 
+	CLASSFIELD : METHOD . ID LEFTB TYFIELD RIGHTB COLON ID EQUAL EXP 
+	CLASSFIELD : METHOD . ID LEFTB TYFIELD RIGHTB EQUAL EXP 
 
-	ID	shift 126
+	ID	shift 127
 
 
 	.	error
@@ -2072,9 +2074,10 @@ state 104:
 
 state 105:
 
-	DEC : CLASS ID EXTENDS ID . LEFTCB CLASSFIELDS RIGHTCB 
+	CLASSFIELD : VAR . ID COLON ID COLONEQUAL EXP 
+	CLASSFIELD : VAR . ID COLONEQUAL EXP 
 
-	LEFTCB	shift 127
+	ID	shift 128
 
 
 	.	error
@@ -2082,10 +2085,9 @@ state 105:
 
 state 106:
 
-	DEC : PRIMITIVE ID LEFTB TYFIELD . RIGHTB 
-	DEC : PRIMITIVE ID LEFTB TYFIELD . RIGHTB COLON ID 
+	DEC : CLASS ID EXTENDS ID . LEFTCB CLASSFIELDS RIGHTCB 
 
-	RIGHTB	shift 128
+	LEFTCB	shift 129
 
 
 	.	error
@@ -2093,16 +2095,27 @@ state 106:
 
 state 107:
 
-	TYFIELD : ID . COLON ID 
-	TYFIELD : ID . COLON ID COMMA TYFIELD 
+	DEC : PRIMITIVE ID LEFTB TYFIELD . RIGHTB 
+	DEC : PRIMITIVE ID LEFTB TYFIELD . RIGHTB COLON ID 
 
-	COLON	shift 129
+	RIGHTB	shift 130
 
 
 	.	error
 
 
 state 108:
+
+	TYFIELD : ID . COLON ID 
+	TYFIELD : ID . COLON ID COMMA TYFIELD 
+
+	COLON	shift 131
+
+
+	.	error
+
+
+state 109:
 
 	DEC : TYPE ID EQUAL TY .  (reduce by rule 49)
 
@@ -2111,41 +2124,41 @@ state 108:
 	.	reduce by rule 49
 
 
-state 109:
+state 110:
 
-	TY : ID .  (reduce by rule 64)
+	TY : ID .  (reduce by rule 65)
 	TY : ID . COLON ID 
 	TY : ID . COLON ID COMMA TYFIELD 
 
-	COLON	shift 130
+	COLON	shift 132
 
 
-	.	reduce by rule 64
-
-
-state 110:
-
-	TY : CLASS . LEFTCB CLASSFIELDS RIGHTCB 
-	TY : CLASS . EXTENDS ID LEFTCB CLASSFIELDS RIGHTCB 
-
-	EXTENDS	shift 132
-	LEFTCB	shift 131
-
-
-	.	error
+	.	reduce by rule 65
 
 
 state 111:
 
-	TY : ARRAY . OF ID 
+	TY : CLASS . LEFTCB CLASSFIELDS RIGHTCB 
+	TY : CLASS . EXTENDS ID LEFTCB CLASSFIELDS RIGHTCB 
 
-	OF	shift 133
+	EXTENDS	shift 134
+	LEFTCB	shift 133
 
 
 	.	error
 
 
 state 112:
+
+	TY : ARRAY . OF ID 
+
+	OF	shift 135
+
+
+	.	error
+
+
+state 113:
 
 	EXP : EXP . PLUS EXP 
 	EXP : EXP . MINUS EXP 
@@ -2178,28 +2191,38 @@ state 112:
 	.	reduce by rule 52
 
 
-state 113:
-
-	DEC : FUNCTION ID LEFTB TYFIELD . RIGHTB EQUAL EXP 
-	DEC : FUNCTION ID LEFTB TYFIELD . RIGHTB COLON ID EQUAL EXP 
-
-	RIGHTB	shift 134
-
-
-	.	error
-
-
 state 114:
 
-	EXP : LET DECS IN EXPS . END 
+	DEC : VAR ID COLON ID . COLONEQUAL EXP 
 
-	END	shift 135
+	COLONEQUAL	shift 136
 
 
 	.	error
 
 
 state 115:
+
+	DEC : FUNCTION ID LEFTB TYFIELD . RIGHTB EQUAL EXP 
+	DEC : FUNCTION ID LEFTB TYFIELD . RIGHTB COLON ID EQUAL EXP 
+
+	RIGHTB	shift 137
+
+
+	.	error
+
+
+state 116:
+
+	EXP : LET DECS IN EXPS . END 
+
+	END	shift 138
+
+
+	.	error
+
+
+state 117:
 
 	EXP : EXP . PLUS EXP 
 	EXP : EXP . MINUS EXP 
@@ -2215,7 +2238,7 @@ state 115:
 	EXP : EXP . OR EXP 
 	EXP : FOR ID COLONEQUAL EXP . TO EXP DO EXP 
 
-	TO	shift 136
+	TO	shift 139
 	PLUS	shift 38
 	MINUS	shift 37
 	MUL	shift 36
@@ -2233,7 +2256,7 @@ state 115:
 	.	error
 
 
-state 116:
+state 118:
 
 	EXP : EXP . PLUS EXP 
 	EXP : EXP . MINUS EXP 
@@ -2266,7 +2289,7 @@ state 116:
 	.	reduce by rule 31
 
 
-state 117:
+state 119:
 
 	EXP : EXP . PLUS EXP 
 	EXP : EXP . MINUS EXP 
@@ -2283,7 +2306,7 @@ state 117:
 	EXP : IF EXP THEN EXP .  (reduce by rule 29)
 	EXP : IF EXP THEN EXP . ELSE EXP 
 
-	ELSE	shift 137
+	ELSE	shift 140
 	PLUS	shift 38
 	MINUS	shift 37
 	MUL	shift 36
@@ -2301,27 +2324,27 @@ state 117:
 	.	reduce by rule 29
 
 
-state 118:
+state 120:
 
 	EXP : LVALUE DOT ID LEFTB HELP2 . RIGHTB 
 
-	RIGHTB	shift 138
+	RIGHTB	shift 141
 
 
 	.	error
 
 
-state 119:
+state 121:
 
 	EXP : ID DOT ID LEFTB HELP2 . RIGHTB 
 
-	RIGHTB	shift 139
+	RIGHTB	shift 142
 
 
 	.	error
 
 
-state 120:
+state 122:
 
 	EXP : EXP . PLUS EXP 
 	EXP : EXP . MINUS EXP 
@@ -2338,7 +2361,7 @@ state 120:
 	HELP1 : ID EQUAL EXP .  (reduce by rule 35)
 	HELP1 : ID EQUAL EXP . COMMA HELP1 
 
-	COMMA	shift 140
+	COMMA	shift 143
 	PLUS	shift 38
 	MINUS	shift 37
 	MUL	shift 36
@@ -2356,7 +2379,7 @@ state 120:
 	.	reduce by rule 35
 
 
-state 121:
+state 123:
 
 	EXP : ID LEFTSB EXP RIGHTSB OF . EXP 
 
@@ -2373,13 +2396,13 @@ state 121:
 	STRING	shift 6
 	CONST	shift 5
 
-	EXP	goto 141
+	EXP	goto 144
 	LVALUE	goto 3
 
 	.	error
 
 
-state 122:
+state 124:
 
 	HELP2 : EXP COMMA HELP2 .  (reduce by rule 39)
 
@@ -2388,16 +2411,16 @@ state 122:
 	.	reduce by rule 39
 
 
-state 123:
+state 125:
 
-	CLASSFIELDS : CLASSFIELD CLASSFIELDS .  (reduce by rule 59)
-
-
-
-	.	reduce by rule 59
+	CLASSFIELDS : CLASSFIELD CLASSFIELDS .  (reduce by rule 60)
 
 
-state 124:
+
+	.	reduce by rule 60
+
+
+state 126:
 
 	DEC : CLASS ID LEFTCB CLASSFIELDS RIGHTCB .  (reduce by rule 50)
 
@@ -2406,91 +2429,57 @@ state 124:
 	.	reduce by rule 50
 
 
-state 125:
+state 127:
 
 	CLASSFIELD : METHOD ID . LEFTB TYFIELD RIGHTB COLON ID EQUAL EXP 
 	CLASSFIELD : METHOD ID . LEFTB TYFIELD RIGHTB EQUAL EXP 
 
-	LEFTB	shift 142
+	LEFTB	shift 145
 
 
 	.	error
-
-
-state 126:
-
-	CLASSFIELD : VAR ID . COLON ID COLONEQUAL EXP 
-	CLASSFIELD : VAR ID . COLONEQUAL EXP 
-
-	COLON	shift 144
-	COLONEQUAL	shift 143
-
-
-	.	error
-
-
-state 127:
-
-	DEC : CLASS ID EXTENDS ID LEFTCB . CLASSFIELDS RIGHTCB 
-
-	VAR	shift 104
-	METHOD	shift 103
-
-	CLASSFIELDS	goto 145
-	CLASSFIELD	goto 101
-
-	.	reduce by rule 58
 
 
 state 128:
 
-	DEC : PRIMITIVE ID LEFTB TYFIELD RIGHTB .  (reduce by rule 55)
-	DEC : PRIMITIVE ID LEFTB TYFIELD RIGHTB . COLON ID 
+	CLASSFIELD : VAR ID . COLON ID COLONEQUAL EXP 
+	CLASSFIELD : VAR ID . COLONEQUAL EXP 
 
-	COLON	shift 146
+	COLON	shift 147
+	COLONEQUAL	shift 146
 
 
-	.	reduce by rule 55
+	.	error
 
 
 state 129:
 
-	TYFIELD : ID COLON . ID 
-	TYFIELD : ID COLON . ID COMMA TYFIELD 
+	DEC : CLASS ID EXTENDS ID LEFTCB . CLASSFIELDS RIGHTCB 
 
-	ID	shift 147
+	VAR	shift 105
+	METHOD	shift 104
 
+	CLASSFIELDS	goto 148
+	CLASSFIELD	goto 102
 
-	.	error
+	.	reduce by rule 59
 
 
 state 130:
 
-	TY : ID COLON . ID 
-	TY : ID COLON . ID COMMA TYFIELD 
+	DEC : PRIMITIVE ID LEFTB TYFIELD RIGHTB .  (reduce by rule 56)
+	DEC : PRIMITIVE ID LEFTB TYFIELD RIGHTB . COLON ID 
 
-	ID	shift 148
+	COLON	shift 149
 
 
-	.	error
+	.	reduce by rule 56
 
 
 state 131:
 
-	TY : CLASS LEFTCB . CLASSFIELDS RIGHTCB 
-
-	VAR	shift 104
-	METHOD	shift 103
-
-	CLASSFIELDS	goto 149
-	CLASSFIELD	goto 101
-
-	.	reduce by rule 58
-
-
-state 132:
-
-	TY : CLASS EXTENDS . ID LEFTCB CLASSFIELDS RIGHTCB 
+	TYFIELD : ID COLON . ID 
+	TYFIELD : ID COLON . ID COMMA TYFIELD 
 
 	ID	shift 150
 
@@ -2498,9 +2487,10 @@ state 132:
 	.	error
 
 
-state 133:
+state 132:
 
-	TY : ARRAY OF . ID 
+	TY : ID COLON . ID 
+	TY : ID COLON . ID COMMA TYFIELD 
 
 	ID	shift 151
 
@@ -2508,13 +2498,24 @@ state 133:
 	.	error
 
 
+state 133:
+
+	TY : CLASS LEFTCB . CLASSFIELDS RIGHTCB 
+
+	VAR	shift 105
+	METHOD	shift 104
+
+	CLASSFIELDS	goto 152
+	CLASSFIELD	goto 102
+
+	.	reduce by rule 59
+
+
 state 134:
 
-	DEC : FUNCTION ID LEFTB TYFIELD RIGHTB . EQUAL EXP 
-	DEC : FUNCTION ID LEFTB TYFIELD RIGHTB . COLON ID EQUAL EXP 
+	TY : CLASS EXTENDS . ID LEFTCB CLASSFIELDS RIGHTCB 
 
-	COLON	shift 153
-	EQUAL	shift 152
+	ID	shift 153
 
 
 	.	error
@@ -2522,39 +2523,17 @@ state 134:
 
 state 135:
 
-	EXP : LET DECS IN EXPS END .  (reduce by rule 34)
+	TY : ARRAY OF . ID 
 
+	ID	shift 154
 
-
-	.	reduce by rule 34
-
-
-state 136:
-
-	EXP : FOR ID COLONEQUAL EXP TO . EXP DO EXP 
-
-	IF	shift 22
-	WHILE	shift 21
-	FOR	shift 20
-	LET	shift 19
-	BREAK	shift 18
-	NIL	shift 17
-	NEW	shift 10
-	LEFTB	shift 9
-	MINUS	shift 8
-	ID	shift 7
-	STRING	shift 6
-	CONST	shift 5
-
-	EXP	goto 154
-	LVALUE	goto 3
 
 	.	error
 
 
-state 137:
+state 136:
 
-	EXP : IF EXP THEN EXP ELSE . EXP 
+	DEC : VAR ID COLON ID COLONEQUAL . EXP 
 
 	IF	shift 22
 	WHILE	shift 21
@@ -2575,7 +2554,74 @@ state 137:
 	.	error
 
 
+state 137:
+
+	DEC : FUNCTION ID LEFTB TYFIELD RIGHTB . EQUAL EXP 
+	DEC : FUNCTION ID LEFTB TYFIELD RIGHTB . COLON ID EQUAL EXP 
+
+	COLON	shift 157
+	EQUAL	shift 156
+
+
+	.	error
+
+
 state 138:
+
+	EXP : LET DECS IN EXPS END .  (reduce by rule 34)
+
+
+
+	.	reduce by rule 34
+
+
+state 139:
+
+	EXP : FOR ID COLONEQUAL EXP TO . EXP DO EXP 
+
+	IF	shift 22
+	WHILE	shift 21
+	FOR	shift 20
+	LET	shift 19
+	BREAK	shift 18
+	NIL	shift 17
+	NEW	shift 10
+	LEFTB	shift 9
+	MINUS	shift 8
+	ID	shift 7
+	STRING	shift 6
+	CONST	shift 5
+
+	EXP	goto 158
+	LVALUE	goto 3
+
+	.	error
+
+
+state 140:
+
+	EXP : IF EXP THEN EXP ELSE . EXP 
+
+	IF	shift 22
+	WHILE	shift 21
+	FOR	shift 20
+	LET	shift 19
+	BREAK	shift 18
+	NIL	shift 17
+	NEW	shift 10
+	LEFTB	shift 9
+	MINUS	shift 8
+	ID	shift 7
+	STRING	shift 6
+	CONST	shift 5
+
+	EXP	goto 159
+	LVALUE	goto 3
+
+	.	error
+
+
+state 141:
 
 	EXP : LVALUE DOT ID LEFTB HELP2 RIGHTB .  (reduce by rule 12)
 
@@ -2584,7 +2630,7 @@ state 138:
 	.	reduce by rule 12
 
 
-state 139:
+state 142:
 
 	EXP : ID DOT ID LEFTB HELP2 RIGHTB .  (reduce by rule 11)
 
@@ -2593,18 +2639,18 @@ state 139:
 	.	reduce by rule 11
 
 
-state 140:
+state 143:
 
 	HELP1 : ID EQUAL EXP COMMA . HELP1 
 
 	ID	shift 76
 
-	HELP1	goto 156
+	HELP1	goto 160
 
 	.	error
 
 
-state 141:
+state 144:
 
 	EXP : ID LEFTSB EXP RIGHTSB OF EXP .  (reduce by rule 5)
 	EXP : EXP . PLUS EXP 
@@ -2637,19 +2683,19 @@ state 141:
 	.	reduce by rule 5
 
 
-state 142:
+state 145:
 
 	CLASSFIELD : METHOD ID LEFTB . TYFIELD RIGHTB COLON ID EQUAL EXP 
 	CLASSFIELD : METHOD ID LEFTB . TYFIELD RIGHTB EQUAL EXP 
 
-	ID	shift 107
+	ID	shift 108
 
-	TYFIELD	goto 157
+	TYFIELD	goto 161
 
-	.	reduce by rule 70
+	.	reduce by rule 71
 
 
-state 143:
+state 146:
 
 	CLASSFIELD : VAR ID COLONEQUAL . EXP 
 
@@ -2666,67 +2712,25 @@ state 143:
 	STRING	shift 6
 	CONST	shift 5
 
-	EXP	goto 158
+	EXP	goto 162
 	LVALUE	goto 3
-
-	.	error
-
-
-state 144:
-
-	CLASSFIELD : VAR ID COLON . ID COLONEQUAL EXP 
-
-	ID	shift 159
-
-
-	.	error
-
-
-state 145:
-
-	DEC : CLASS ID EXTENDS ID LEFTCB CLASSFIELDS . RIGHTCB 
-
-	RIGHTCB	shift 160
-
-
-	.	error
-
-
-state 146:
-
-	DEC : PRIMITIVE ID LEFTB TYFIELD RIGHTB COLON . ID 
-
-	ID	shift 161
-
 
 	.	error
 
 
 state 147:
 
-	TYFIELD : ID COLON ID .  (reduce by rule 71)
-	TYFIELD : ID COLON ID . COMMA TYFIELD 
+	CLASSFIELD : VAR ID COLON . ID COLONEQUAL EXP 
 
-	COMMA	shift 162
+	ID	shift 163
 
 
-	.	reduce by rule 71
+	.	error
 
 
 state 148:
 
-	TY : ID COLON ID .  (reduce by rule 65)
-	TY : ID COLON ID . COMMA TYFIELD 
-
-	COMMA	shift 163
-
-
-	.	reduce by rule 65
-
-
-state 149:
-
-	TY : CLASS LEFTCB CLASSFIELDS . RIGHTCB 
+	DEC : CLASS ID EXTENDS ID LEFTCB CLASSFIELDS . RIGHTCB 
 
 	RIGHTCB	shift 164
 
@@ -2734,26 +2738,101 @@ state 149:
 	.	error
 
 
-state 150:
+state 149:
 
-	TY : CLASS EXTENDS ID . LEFTCB CLASSFIELDS RIGHTCB 
+	DEC : PRIMITIVE ID LEFTB TYFIELD RIGHTB COLON . ID 
 
-	LEFTCB	shift 165
+	ID	shift 165
 
 
 	.	error
 
 
+state 150:
+
+	TYFIELD : ID COLON ID .  (reduce by rule 72)
+	TYFIELD : ID COLON ID . COMMA TYFIELD 
+
+	COMMA	shift 166
+
+
+	.	reduce by rule 72
+
+
 state 151:
 
-	TY : ARRAY OF ID .  (reduce by rule 67)
+	TY : ID COLON ID .  (reduce by rule 66)
+	TY : ID COLON ID . COMMA TYFIELD 
+
+	COMMA	shift 167
 
 
-
-	.	reduce by rule 67
+	.	reduce by rule 66
 
 
 state 152:
+
+	TY : CLASS LEFTCB CLASSFIELDS . RIGHTCB 
+
+	RIGHTCB	shift 168
+
+
+	.	error
+
+
+state 153:
+
+	TY : CLASS EXTENDS ID . LEFTCB CLASSFIELDS RIGHTCB 
+
+	LEFTCB	shift 169
+
+
+	.	error
+
+
+state 154:
+
+	TY : ARRAY OF ID .  (reduce by rule 68)
+
+
+
+	.	reduce by rule 68
+
+
+state 155:
+
+	EXP : EXP . PLUS EXP 
+	EXP : EXP . MINUS EXP 
+	EXP : EXP . MUL EXP 
+	EXP : EXP . DIV EXP 
+	EXP : EXP . EQUAL EXP 
+	EXP : EXP . LTGT EXP 
+	EXP : EXP . GT EXP 
+	EXP : EXP . LT EXP 
+	EXP : EXP . GTEQUAL EXP 
+	EXP : EXP . LTEQUAL EXP 
+	EXP : EXP . AND EXP 
+	EXP : EXP . OR EXP 
+	DEC : VAR ID COLON ID COLONEQUAL EXP .  (reduce by rule 53)
+
+	PLUS	shift 38
+	MINUS	shift 37
+	MUL	shift 36
+	DIV	shift 35
+	EQUAL	shift 34
+	LTGT	shift 33
+	LT	shift 32
+	LTEQUAL	shift 31
+	GT	shift 30
+	GTEQUAL	shift 29
+	AND	shift 28
+	OR	shift 27
+
+
+	.	reduce by rule 53
+
+
+state 156:
 
 	DEC : FUNCTION ID LEFTB TYFIELD RIGHTB EQUAL . EXP 
 
@@ -2770,23 +2849,23 @@ state 152:
 	STRING	shift 6
 	CONST	shift 5
 
-	EXP	goto 166
+	EXP	goto 170
 	LVALUE	goto 3
 
 	.	error
 
 
-state 153:
+state 157:
 
 	DEC : FUNCTION ID LEFTB TYFIELD RIGHTB COLON . ID EQUAL EXP 
 
-	ID	shift 167
+	ID	shift 171
 
 
 	.	error
 
 
-state 154:
+state 158:
 
 	EXP : EXP . PLUS EXP 
 	EXP : EXP . MINUS EXP 
@@ -2802,7 +2881,7 @@ state 154:
 	EXP : EXP . OR EXP 
 	EXP : FOR ID COLONEQUAL EXP TO EXP . DO EXP 
 
-	DO	shift 168
+	DO	shift 172
 	PLUS	shift 38
 	MINUS	shift 37
 	MUL	shift 36
@@ -2820,7 +2899,7 @@ state 154:
 	.	error
 
 
-state 155:
+state 159:
 
 	EXP : EXP . PLUS EXP 
 	EXP : EXP . MINUS EXP 
@@ -2853,7 +2932,7 @@ state 155:
 	.	reduce by rule 30
 
 
-state 156:
+state 160:
 
 	HELP1 : ID EQUAL EXP COMMA HELP1 .  (reduce by rule 36)
 
@@ -2862,18 +2941,18 @@ state 156:
 	.	reduce by rule 36
 
 
-state 157:
+state 161:
 
 	CLASSFIELD : METHOD ID LEFTB TYFIELD . RIGHTB COLON ID EQUAL EXP 
 	CLASSFIELD : METHOD ID LEFTB TYFIELD . RIGHTB EQUAL EXP 
 
-	RIGHTB	shift 169
+	RIGHTB	shift 173
 
 
 	.	error
 
 
-state 158:
+state 162:
 
 	EXP : EXP . PLUS EXP 
 	EXP : EXP . MINUS EXP 
@@ -2887,7 +2966,7 @@ state 158:
 	EXP : EXP . LTEQUAL EXP 
 	EXP : EXP . AND EXP 
 	EXP : EXP . OR EXP 
-	CLASSFIELD : VAR ID COLONEQUAL EXP .  (reduce by rule 61)
+	CLASSFIELD : VAR ID COLONEQUAL EXP .  (reduce by rule 62)
 
 	PLUS	shift 38
 	MINUS	shift 37
@@ -2903,20 +2982,20 @@ state 158:
 	OR	shift 27
 
 
-	.	reduce by rule 61
+	.	reduce by rule 62
 
 
-state 159:
+state 163:
 
 	CLASSFIELD : VAR ID COLON ID . COLONEQUAL EXP 
 
-	COLONEQUAL	shift 170
+	COLONEQUAL	shift 174
 
 
 	.	error
 
 
-state 160:
+state 164:
 
 	DEC : CLASS ID EXTENDS ID LEFTCB CLASSFIELDS RIGHTCB .  (reduce by rule 51)
 
@@ -2925,60 +3004,60 @@ state 160:
 	.	reduce by rule 51
 
 
-state 161:
-
-	DEC : PRIMITIVE ID LEFTB TYFIELD RIGHTB COLON ID .  (reduce by rule 56)
-
-
-
-	.	reduce by rule 56
-
-
-state 162:
-
-	TYFIELD : ID COLON ID COMMA . TYFIELD 
-
-	ID	shift 107
-
-	TYFIELD	goto 171
-
-	.	reduce by rule 70
-
-
-state 163:
-
-	TY : ID COLON ID COMMA . TYFIELD 
-
-	ID	shift 107
-
-	TYFIELD	goto 172
-
-	.	reduce by rule 70
-
-
-state 164:
-
-	TY : CLASS LEFTCB CLASSFIELDS RIGHTCB .  (reduce by rule 68)
-
-
-
-	.	reduce by rule 68
-
-
 state 165:
 
-	TY : CLASS EXTENDS ID LEFTCB . CLASSFIELDS RIGHTCB 
+	DEC : PRIMITIVE ID LEFTB TYFIELD RIGHTB COLON ID .  (reduce by rule 57)
 
-	VAR	shift 104
-	METHOD	shift 103
 
-	CLASSFIELDS	goto 173
-	CLASSFIELD	goto 101
 
-	.	reduce by rule 58
+	.	reduce by rule 57
 
 
 state 166:
+
+	TYFIELD : ID COLON ID COMMA . TYFIELD 
+
+	ID	shift 108
+
+	TYFIELD	goto 175
+
+	.	reduce by rule 71
+
+
+state 167:
+
+	TY : ID COLON ID COMMA . TYFIELD 
+
+	ID	shift 108
+
+	TYFIELD	goto 176
+
+	.	reduce by rule 71
+
+
+state 168:
+
+	TY : CLASS LEFTCB CLASSFIELDS RIGHTCB .  (reduce by rule 69)
+
+
+
+	.	reduce by rule 69
+
+
+state 169:
+
+	TY : CLASS EXTENDS ID LEFTCB . CLASSFIELDS RIGHTCB 
+
+	VAR	shift 105
+	METHOD	shift 104
+
+	CLASSFIELDS	goto 177
+	CLASSFIELD	goto 102
+
+	.	reduce by rule 59
+
+
+state 170:
 
 	EXP : EXP . PLUS EXP 
 	EXP : EXP . MINUS EXP 
@@ -2992,7 +3071,7 @@ state 166:
 	EXP : EXP . LTEQUAL EXP 
 	EXP : EXP . AND EXP 
 	EXP : EXP . OR EXP 
-	DEC : FUNCTION ID LEFTB TYFIELD RIGHTB EQUAL EXP .  (reduce by rule 53)
+	DEC : FUNCTION ID LEFTB TYFIELD RIGHTB EQUAL EXP .  (reduce by rule 54)
 
 	PLUS	shift 38
 	MINUS	shift 37
@@ -3008,20 +3087,20 @@ state 166:
 	OR	shift 27
 
 
-	.	reduce by rule 53
+	.	reduce by rule 54
 
 
-state 167:
+state 171:
 
 	DEC : FUNCTION ID LEFTB TYFIELD RIGHTB COLON ID . EQUAL EXP 
 
-	EQUAL	shift 174
+	EQUAL	shift 178
 
 
 	.	error
 
 
-state 168:
+state 172:
 
 	EXP : FOR ID COLONEQUAL EXP TO EXP DO . EXP 
 
@@ -3038,25 +3117,25 @@ state 168:
 	STRING	shift 6
 	CONST	shift 5
 
-	EXP	goto 175
+	EXP	goto 179
 	LVALUE	goto 3
 
 	.	error
 
 
-state 169:
+state 173:
 
 	CLASSFIELD : METHOD ID LEFTB TYFIELD RIGHTB . COLON ID EQUAL EXP 
 	CLASSFIELD : METHOD ID LEFTB TYFIELD RIGHTB . EQUAL EXP 
 
-	COLON	shift 177
-	EQUAL	shift 176
+	COLON	shift 181
+	EQUAL	shift 180
 
 
 	.	error
 
 
-state 170:
+state 174:
 
 	CLASSFIELD : VAR ID COLON ID COLONEQUAL . EXP 
 
@@ -3073,41 +3152,41 @@ state 170:
 	STRING	shift 6
 	CONST	shift 5
 
-	EXP	goto 178
+	EXP	goto 182
 	LVALUE	goto 3
 
 	.	error
 
 
-state 171:
+state 175:
 
-	TYFIELD : ID COLON ID COMMA TYFIELD .  (reduce by rule 72)
-
-
-
-	.	reduce by rule 72
-
-
-state 172:
-
-	TY : ID COLON ID COMMA TYFIELD .  (reduce by rule 66)
+	TYFIELD : ID COLON ID COMMA TYFIELD .  (reduce by rule 73)
 
 
 
-	.	reduce by rule 66
+	.	reduce by rule 73
 
 
-state 173:
+state 176:
+
+	TY : ID COLON ID COMMA TYFIELD .  (reduce by rule 67)
+
+
+
+	.	reduce by rule 67
+
+
+state 177:
 
 	TY : CLASS EXTENDS ID LEFTCB CLASSFIELDS . RIGHTCB 
 
-	RIGHTCB	shift 179
+	RIGHTCB	shift 183
 
 
 	.	error
 
 
-state 174:
+state 178:
 
 	DEC : FUNCTION ID LEFTB TYFIELD RIGHTB COLON ID EQUAL . EXP 
 
@@ -3124,13 +3203,13 @@ state 174:
 	STRING	shift 6
 	CONST	shift 5
 
-	EXP	goto 180
+	EXP	goto 184
 	LVALUE	goto 3
 
 	.	error
 
 
-state 175:
+state 179:
 
 	EXP : EXP . PLUS EXP 
 	EXP : EXP . MINUS EXP 
@@ -3163,7 +3242,7 @@ state 175:
 	.	reduce by rule 32
 
 
-state 176:
+state 180:
 
 	CLASSFIELD : METHOD ID LEFTB TYFIELD RIGHTB EQUAL . EXP 
 
@@ -3180,23 +3259,23 @@ state 176:
 	STRING	shift 6
 	CONST	shift 5
 
-	EXP	goto 181
+	EXP	goto 185
 	LVALUE	goto 3
 
 	.	error
 
 
-state 177:
+state 181:
 
 	CLASSFIELD : METHOD ID LEFTB TYFIELD RIGHTB COLON . ID EQUAL EXP 
 
-	ID	shift 182
+	ID	shift 186
 
 
 	.	error
 
 
-state 178:
+state 182:
 
 	EXP : EXP . PLUS EXP 
 	EXP : EXP . MINUS EXP 
@@ -3210,7 +3289,7 @@ state 178:
 	EXP : EXP . LTEQUAL EXP 
 	EXP : EXP . AND EXP 
 	EXP : EXP . OR EXP 
-	CLASSFIELD : VAR ID COLON ID COLONEQUAL EXP .  (reduce by rule 60)
+	CLASSFIELD : VAR ID COLON ID COLONEQUAL EXP .  (reduce by rule 61)
 
 	PLUS	shift 38
 	MINUS	shift 37
@@ -3226,19 +3305,19 @@ state 178:
 	OR	shift 27
 
 
-	.	reduce by rule 60
+	.	reduce by rule 61
 
 
-state 179:
+state 183:
 
-	TY : CLASS EXTENDS ID LEFTCB CLASSFIELDS RIGHTCB .  (reduce by rule 69)
-
-
-
-	.	reduce by rule 69
+	TY : CLASS EXTENDS ID LEFTCB CLASSFIELDS RIGHTCB .  (reduce by rule 70)
 
 
-state 180:
+
+	.	reduce by rule 70
+
+
+state 184:
 
 	EXP : EXP . PLUS EXP 
 	EXP : EXP . MINUS EXP 
@@ -3252,7 +3331,7 @@ state 180:
 	EXP : EXP . LTEQUAL EXP 
 	EXP : EXP . AND EXP 
 	EXP : EXP . OR EXP 
-	DEC : FUNCTION ID LEFTB TYFIELD RIGHTB COLON ID EQUAL EXP .  (reduce by rule 54)
+	DEC : FUNCTION ID LEFTB TYFIELD RIGHTB COLON ID EQUAL EXP .  (reduce by rule 55)
 
 	PLUS	shift 38
 	MINUS	shift 37
@@ -3268,10 +3347,10 @@ state 180:
 	OR	shift 27
 
 
-	.	reduce by rule 54
+	.	reduce by rule 55
 
 
-state 181:
+state 185:
 
 	EXP : EXP . PLUS EXP 
 	EXP : EXP . MINUS EXP 
@@ -3285,7 +3364,73 @@ state 181:
 	EXP : EXP . LTEQUAL EXP 
 	EXP : EXP . AND EXP 
 	EXP : EXP . OR EXP 
-	CLASSFIELD : METHOD ID LEFTB TYFIELD RIGHTB EQUAL EXP .  (reduce by rule 63)
+	CLASSFIELD : METHOD ID LEFTB TYFIELD RIGHTB EQUAL EXP .  (reduce by rule 64)
+
+	PLUS	shift 38
+	MINUS	shift 37
+	MUL	shift 36
+	DIV	shift 35
+	EQUAL	shift 34
+	LTGT	shift 33
+	LT	shift 32
+	LTEQUAL	shift 31
+	GT	shift 30
+	GTEQUAL	shift 29
+	AND	shift 28
+	OR	shift 27
+
+
+	.	reduce by rule 64
+
+
+state 186:
+
+	CLASSFIELD : METHOD ID LEFTB TYFIELD RIGHTB COLON ID . EQUAL EXP 
+
+	EQUAL	shift 187
+
+
+	.	error
+
+
+state 187:
+
+	CLASSFIELD : METHOD ID LEFTB TYFIELD RIGHTB COLON ID EQUAL . EXP 
+
+	IF	shift 22
+	WHILE	shift 21
+	FOR	shift 20
+	LET	shift 19
+	BREAK	shift 18
+	NIL	shift 17
+	NEW	shift 10
+	LEFTB	shift 9
+	MINUS	shift 8
+	ID	shift 7
+	STRING	shift 6
+	CONST	shift 5
+
+	EXP	goto 188
+	LVALUE	goto 3
+
+	.	error
+
+
+state 188:
+
+	EXP : EXP . PLUS EXP 
+	EXP : EXP . MINUS EXP 
+	EXP : EXP . MUL EXP 
+	EXP : EXP . DIV EXP 
+	EXP : EXP . EQUAL EXP 
+	EXP : EXP . LTGT EXP 
+	EXP : EXP . GT EXP 
+	EXP : EXP . LT EXP 
+	EXP : EXP . GTEQUAL EXP 
+	EXP : EXP . LTEQUAL EXP 
+	EXP : EXP . AND EXP 
+	EXP : EXP . OR EXP 
+	CLASSFIELD : METHOD ID LEFTB TYFIELD RIGHTB COLON ID EQUAL EXP .  (reduce by rule 63)
 
 	PLUS	shift 38
 	MINUS	shift 37
@@ -3304,73 +3449,7 @@ state 181:
 	.	reduce by rule 63
 
 
-state 182:
-
-	CLASSFIELD : METHOD ID LEFTB TYFIELD RIGHTB COLON ID . EQUAL EXP 
-
-	EQUAL	shift 183
-
-
-	.	error
-
-
-state 183:
-
-	CLASSFIELD : METHOD ID LEFTB TYFIELD RIGHTB COLON ID EQUAL . EXP 
-
-	IF	shift 22
-	WHILE	shift 21
-	FOR	shift 20
-	LET	shift 19
-	BREAK	shift 18
-	NIL	shift 17
-	NEW	shift 10
-	LEFTB	shift 9
-	MINUS	shift 8
-	ID	shift 7
-	STRING	shift 6
-	CONST	shift 5
-
-	EXP	goto 184
-	LVALUE	goto 3
-
-	.	error
-
-
-state 184:
-
-	EXP : EXP . PLUS EXP 
-	EXP : EXP . MINUS EXP 
-	EXP : EXP . MUL EXP 
-	EXP : EXP . DIV EXP 
-	EXP : EXP . EQUAL EXP 
-	EXP : EXP . LTGT EXP 
-	EXP : EXP . GT EXP 
-	EXP : EXP . LT EXP 
-	EXP : EXP . GTEQUAL EXP 
-	EXP : EXP . LTEQUAL EXP 
-	EXP : EXP . AND EXP 
-	EXP : EXP . OR EXP 
-	CLASSFIELD : METHOD ID LEFTB TYFIELD RIGHTB COLON ID EQUAL EXP .  (reduce by rule 62)
-
-	PLUS	shift 38
-	MINUS	shift 37
-	MUL	shift 36
-	DIV	shift 35
-	EQUAL	shift 34
-	LTGT	shift 33
-	LT	shift 32
-	LTEQUAL	shift 31
-	GT	shift 30
-	GTEQUAL	shift 29
-	AND	shift 28
-	OR	shift 27
-
-
-	.	reduce by rule 62
-
-
-state 185:
+state 189:
 
 
 	EOF	accept
@@ -3378,5 +3457,5 @@ state 185:
 
 	.	error
 
-617 of 1278 action table entries left after compaction
-116 goto table entries
+632 of 1309 action table entries left after compaction
+118 goto table entries
