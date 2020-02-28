@@ -40,15 +40,45 @@ structure MIPS = struct
 						| Uncond1 of UnconditionalJump1 * 'l
 						| Uncond2 of UnconditionalJump2 * 't
 						
-	fun pretty (Arith1(And,a,b,c)) = "add $" ^ Int.toString(a) ^ " $" ^ Int.toString(b) ^ " $" ^ Int.toString(c)
-	| pretty (Arith2(Addi,a,b,c)) = "addi $" ^ Int.toString(a) ^ " $" ^ Int.toString(b) ^ " " ^ Int.toString(c)
-	| pretty (Arith3(Mult,a,b)) = "mult $" ^ Int.toString(a) ^ " $" ^ Int.toString(b)
-	| pretty (Logic1(And,a,b,c)) = "and $" ^ Int.toString(a) ^ " $" ^ Int.toString(b) ^ " $" ^ Int.toString(c)
-	| pretty (Logic2(Andi,a,b,c)) = "andi $" ^ Int.toString(a) ^ " $" ^ Int.toString(b) ^ " " ^ Int.toString(c)
-	| pretty (DataTrans1(Lw,a,b,c)) = "lw $" ^ Int.toString(a) ^ " " ^ Int.toString(b) ^ " $" ^ Int.toString(c)
-	| pratty (DataTrans2(Lui,a,b)) = "lui $" ^ Int.toString(a) ^ " " ^ Int.toString(b)
-	| pretty (DataTrans3(La,a,b)) = "la $" ^ Int.toString(a) ^ " " ^ b
-	| pretty (DataTrans4(Mfhi,a)) = "mfhi $" ^ Int.toString(a)
+						
+	fun Arith1_helper x = case x of
+							  Add => "add"
+							| Sub => "sub"
+							| Addu => "addu"
+							| Subu => "subu"
+							| Mul => "mul"
+	
+	fun Arith2_helper x = case x of
+							  Addi => "addi"
+							| Addiu => "addiu"
+							
+	fun Arith3_helper x = case x of
+							  Mult => "mult"
+							| Div => "div"
+							
+	fun Logic1_helper x = case x of
+							And => "and"
+							| Or => "or"
+							
+	fun Logic2_helper x = case x of
+							Andi => "andi"
+							| Ori => "ori"
+							| Sll => "sll"
+							| Srl => "srl"
+							
+	fun DataTrans1_helper x = case x of
+	
+	fun pretty (Arith1(x,a,b,c)) = Arith1_helper ^ " $" ^ Int.toString(a) ^ " $" ^ Int.toString(b) ^ " $" ^ Int.toString(c)
+	| pretty (Arith2(Addi,a,b,c)) = Arith2_helper ^ " $" ^ Int.toString(a) ^ " $" ^ Int.toString(b) ^ " " ^ Int.toString(c)
+	| pretty (Arith3(Mult,a,b)) = Arith3_helper ^ " $" ^ Int.toString(a) ^ " $" ^ Int.toString(b)
+	| pretty (Logic1(And,a,b,c)) = Logic1_helper ^ " $" ^ Int.toString(a) ^ " $" ^ Int.toString(b) ^ " $" ^ Int.toString(c)
+	| pretty (Logic2(Andi,a,b,c)) = Logic2_helper ^ " $" ^ Int.toString(a) ^ " $" ^ Int.toString(b) ^ " " ^ Int.toString(c)
+	| pretty (DataTrans1(Lw,a,b,c)) = DataTrans1_helper ^ " $" ^ Int.toString(a) ^ " " ^ Int.toString(b) ^ " $" ^ Int.toString(c)
+	| pratty (DataTrans2(Lui,a,b)) = Arith1_helper ^ " $" ^ Int.toString(a) ^ " " ^ Int.toString(b)
+	| pretty (DataTrans3(La,a,b)) = Arith1_helper ^ " $" ^ Int.toString(a) ^ " " ^ b
+	| pretty (DataTrans4(Mfhi,a)) = Arith1_helper ^ " $" ^ Int.toString(a)
+	| pretty (DataTrans5(Move,a,b)) = Arith1_helper ^ " $" ^ Int.toString(a) ^ " " ^ Int.toString(b)
+	| pretty (CondBranch(Beq,a,b,c)) = Arith1_helper ^ " $" ^ Int.toString(a) ^ " $" ^ Int.toString(b) ^ " $" ^ c
 
 
 
