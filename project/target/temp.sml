@@ -1,2 +1,3 @@
 structure Temp : TEMP = struct 
-	type 
+	type temp = int;
+	type label = 
