@@ -19,4 +19,8 @@ clean :
 	rm -f tiger.grm.sml
 
 test: parsing
-	$(CURDIR)/parsing test.txt
+	$(CURDIR)/parsing tests/simple_array.txt
+	$(CURDIR)/parsing tests/simple_for.txt
+	$(CURDIR)/parsing tests/simple_if.txt
+	$(CURDIR)/parsing tests/simple_let.txt
+	$(CURDIR)/parsing tests/simple_while.txt
