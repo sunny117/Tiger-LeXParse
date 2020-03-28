@@ -101,23 +101,23 @@ structure Translate : TRANSLATE = struct
         end
 
 
-	fun whileIR (test, body, breaklabel) =
+	fun whileT (test, body, breaklabel) =
         let
             val testlabel = Temp.newlabel()
             val bodylabel = Temp.newlabel()
             val test = unCx test
             val body = unNx body
         in
-            Nx(Tr.SEQ[Tr.LABEL testlabel,
+            Nx(Tree.SEQ[Tree.LABEL testlabel,
                       test (bodylabel, breaklabel),
-                      Tr.LABEL(bodylabel),
+                      Tree.LABEL(bodylabel),
                       body,
-                      Tr.JUMP (Tr.NAME testlabel, [testlabel]),
-                      Tr.LABEL breaklabel])
+                      Tree.JUMP (Tree.NAME testlabel, [testlabel]),
+                      Tree.LABEL breaklabel])
         end
 
 
-    fun forIR (varEx, escape, loEx, hiEx, bodyNx, breaklabel) = 
+    fun forT (varEx, escape, loEx, hiEx, bodyNx, breaklabel) = 
         let
             val var = unEx(varEx)
             val lo = unEx(loEx)
@@ -126,18 +126,18 @@ structure Translate : TRANSLATE = struct
             val bodylabel = Temp.newlabel()
             val updatelabel = Temp.newlabel()
         in
-            Nx(Tr.SEQ[Tr.MOVE(exp2loc var, lo),
-                        Tr.CJUMP(Tr.LE, var, hi, bodylabel, breaklabel),
-                        Tr.LABEL(bodylabel),
+            Nx(Tree.SEQ[Tree.MOVE(exp2loc var, lo),
+                        Tree.CJUMP(Tree.LE, var, hi, bodylabel, breaklabel),
+                        Tree.LABEL(bodylabel),
                         body,
-                        Tr.CJUMP(Tr.LT, var, hi, updatelabel, breaklabel),
-                        Tr.LABEL(updatelabel),
-                        Tr.MOVE(exp2loc var, Tr.BINOP(Tr.PLUS, var, Tr.CONST 1)),
-                        Tr.JUMP(Tr.NAME(bodylabel), [bodylabel]),
-                        Tr.LABEL(breaklabel)])
+                        Tree.CJUMP(Tree.LT, var, hi, updatelabel, breaklabel),
+                        Tree.LABEL(updatelabel),
+                        Tree.MOVE(exp2loc var, Tree.BINOP(Tree.PLUS, var, Tree.CONST 1)),
+                        Tree.JUMP(Tree.NAME(bodylabel), [bodylabel]),
+                        Tree.LABEL(breaklabel)])
         end
 
-    fun breakIR breaklabel = Nx(Tr.JUMP (Tr.NAME breaklabel, [breaklabel]))
+    fun breakT breaklabel = Nx(Tree.JUMP (Tree.NAME breaklabel, [breaklabel]))
 
 
 	
