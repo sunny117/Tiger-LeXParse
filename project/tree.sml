@@ -17,6 +17,9 @@ datatype exp = CONST of LargeInt.int
      and binop = PLUS | MINUS | MUL | DIV
          | AND | OR | LSHIFT | RSHIFT | ARSHIFT | XOR
      and relop = EQ | NE | LT | GT | LE | GE | ULT | ULE | UGT | UGE
+     and loc = TEMPLOC of Temp.temp
+        | MEMLOC of exp
+        | ESEQLOC of stm * exp
 
 end
 
