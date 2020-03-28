@@ -1,9 +1,6 @@
 use "tree.sml";
 use "temp.sml";
-use "MipsFrame.sml"
 
-
-structure F = MipsFrame
 
 signature TRANSLATE = sig
 	type exp
@@ -44,11 +41,11 @@ structure Translate : TRANSLATE = struct
 	  | unEx (Cx genstm) = let val r = Temp.newtemp()
 	  						   val t = Temp.newlabel() and f = Temp.newlabel()
 	  						in 
-							  Tree.ESEQ(Tree.SEQ(Tree.MOVE(Tree.TEMP r, Tree.CONST 1), 
+							  Tree.ESEQ(Tree.SEQ([Tree.MOVE(Tree.TEMPLOC r, Tree.CONST 1), 
 							  genstm(t,f), 
 							  Tree.LABEL f, 
-							  Tree.MOVE(Tree.TEMP r, Tree.CONST 0), 
-							  Tree.LABEL t), 
+							  Tree.MOVE(Tree.TEMPLOC r, Tree.CONST 0), 
+							  Tree.LABEL t]), 
 							  Tree.TEMP r)
 	  						end
 	  | unEx (Nx s) 	 = Tree.ESEQ(s, Tree.CONST 0)
@@ -73,15 +70,15 @@ structure Translate : TRANSLATE = struct
 
 	fun binopT (binop, l, r) = Ex(Tree.BINOP(binop, unEx(l), unEx(r)))
 
-	fun relopT (relop, l, r) = Cx(fn(t,f) => Tree.CJUMP(relop, unEX(l), unEx(r), t, f))
+	fun relopT (relop, l, r) = Cx(fn(t,f) => Tree.CJUMP(relop, unEx(l), unEx(r), t, f))
 
 	(* helper for assign translation to convert exp to location *)
-	fun expconvertloc (Tree.MEM x) = Tree.MEMLOC x
-	  | expconvertloc (Tree.TEMP x) = Tree.TEMPLOC x
-	  | expconvertloc (Tree.ESEQ(x,y)) = Tree.ESEQLOC(x,y)
-	  | expconvertloc _ = Tree.TEMPLOC(Temp.newtemp())
+	fun exp2loc (Tree.MEM x) = Tree.MEMLOC x
+	  | exp2loc (Tree.TEMP x) = Tree.TEMPLOC x
+	  | exp2loc (Tree.ESEQ(x,y)) = Tree.ESEQLOC(x,y)
+	  | exp2loc _ = Tree.TEMPLOC(Temp.newtemp())
 
-	fun assignT (l, r) = Nx(Tree.MOVE(expconvertloc(unEx l), unEx r))
+	fun assignT (l, r) = Nx(Tree.MOVE(exp2loc(unEx l), unEx r))
 
 	fun ifT (test, then', else') =
         let
