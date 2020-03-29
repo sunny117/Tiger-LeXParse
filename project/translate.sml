@@ -1,9 +1,17 @@
 use "tree.sml";
 use "temp.sml";
+use "mipsFrame.sml";
 
 
 signature TRANSLATE = sig
 	type exp
+	type level
+	type access
+
+	val outermost : level
+    val newLevel : {parent: level, name: Temp.label, formals: bool list} -> level
+    val formals : level -> access list
+    val allocLocal : level -> bool -> access
 
 (* These are hidden and not for outside purpose.
 	val unEx : exp -> Tree.exp
@@ -35,7 +43,34 @@ structure Translate : TRANSLATE = struct
 				 | Nx of Tree.stm
 				 | Cx of Temp.label * Temp.label -> Tree.stm
 
-	val NIL = Ex(Tree.CONST 0)
+	datatype level = TOPLEVEL
+      			   | NONTOP of {uniq: unit ref, parent: level, frame: MipsFrame.frame}
+    
+	type access = level * MipsFrame.access
+
+	val fragList = ref [] : MipsFrame.frag list ref
+
+    val outermost = TOPLEVEL
+
+    fun newLevel {parent, name, formals} = 
+        let
+            val formals'= true::formals
+        in
+            NONTOP({uniq = ref (), parent=parent, frame=MipsFrame.newFrame {name=name, formals=formals'}})
+        end
+
+    fun formals TOPLEVEL = []
+      | formals (curlevel as NONTOP{uniq, parent, frame}) = 
+            let
+                fun addLevel (faccess, l) = (curlevel, faccess)::l
+            in
+                foldl addLevel [] (MipsFrame.formals frame)
+            end
+
+	fun allocLocal level' escape' = 
+      case level' of
+           NONTOP({uniq=uniq', parent=parent', frame=frame'}) => (NONTOP({uniq=uniq', parent=parent', frame=frame'}), MipsFrame.allocLocal frame' escape')
+         | TOPLEVEL => (outermost, MipsFrame.allocLocal (MipsFrame.newFrame {name=Temp.newlabel(), formals=[]}) escape')
 
 	fun unEx (Ex e) 	 = e
 	  | unEx (Cx genstm) = let val r = Temp.newtemp()
@@ -58,13 +93,31 @@ structure Translate : TRANSLATE = struct
 	  | unCx (Ex e)				 = (fn(tlabel,flabel) => Tree.CJUMP(Tree.EQ,Tree.CONST 1,e,tlabel,flabel))
 	  | unCx (Cx c)				 = c
 
-
+	val NIL = Ex(Tree.CONST 0)
 	
 	fun intT (x) = Ex(Tree.CONST x)
 
-	(* Need MipsFrame
-	fun stringT (s) = 
-	*)
+	fun stringT (lit) = 
+        let
+          fun checkFragLit(frag) =
+            case frag of 
+                 MipsFrame.PROC(_) => false
+               | MipsFrame.STRING(lab', lit') => String.compare(lit', lit) = EQUAL
+          fun genFragLabel() =
+            case List.find checkFragLit (!fragList) of
+                 SOME(MipsFrame.STRING(lab', lit')) => lab'
+               | _ => 
+                   let
+                     val lab' = Temp.newlabel()
+                   in
+                      fragList := MipsFrame.STRING(lab', lit)::(!fragList);
+                      MipsFrame.STRING(lab', lit)::(!fragList);
+                      lab'
+                   end
+          val lab = genFragLabel()
+        in
+          Ex(Tree.NAME(lab))
+        end 
 
 	fun nilT () = Ex(Tree.CONST 0)
 

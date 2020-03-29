@@ -1,4 +1,6 @@
-use "temp.sml"
+use "temp.sml";
+use "tree.sml";
+
 signature FRAME = sig
     type access
     type frame
@@ -19,15 +21,15 @@ structure MipsFrame : FRAME = struct
     type frame = {name: Temp.label, formals: access list,
                     numLocals: int ref, curOffset: int ref}
     datatype frag = PROC of {body: Tree.stm, frame: frame}
-                  | STRING of Temp.label * STRING
+                  | STRING of Temp.label * string
 
     val FP = Temp.newtemp()
     val wordSize = 4
 
     fun exp (fraccess, frameaddr) = 
         case fraccess of
-            InFrame offset => Tr.MEM(Tr.BINOP(Tr.PLUS, frameaddr, Tr.CONST offset))
-          | InReg temp => Tr.TEMP(temp)
+            InFrame offset => Tree.MEM(Tree.BINOP(Tree.PLUS, frameaddr, Tree.CONST offset))
+          | InReg temp => Tree.TEMP(temp)
 
     val ARGREGS = 4 (* registers allocated for arguments in mips *)
 

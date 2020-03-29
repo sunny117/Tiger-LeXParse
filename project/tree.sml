@@ -2,7 +2,7 @@ use "temp.sml";
 
 structure Tree = struct
 
-datatype exp = CONST of LargeInt.int
+datatype exp = CONST of int
          | NAME of Temp.label
          | TEMP of Temp.temp
          | BINOP of binop * exp * exp
