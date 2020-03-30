@@ -13,6 +13,9 @@ signature FRAME = sig
     val name : frame -> Temp.label
     val formals : frame -> access list
     val allocLocal : frame -> bool -> access
+
+    val externalCall : string * Tree.exp list -> Tree.exp
+    val procEntryExit1 : frame * Tree.stm -> Tree.stm
     
 end
 
@@ -64,5 +67,10 @@ structure MipsFrame : FRAME = struct
                 true => (incrementOffset frame'; InFrame(getOffsetValue frame'))
               | false => InReg(Temp.newtemp())
         end
+
+    fun externalCall (s, args) =
+      Tree.CALL(Tree.NAME(Temp.namedlabel s), args)
+
+    fun procEntryExit1(frame', stm') = stm'
 
 end

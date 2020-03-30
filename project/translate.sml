@@ -32,8 +32,15 @@ signature TRANSLATE = sig
 	val forT : exp * bool ref * exp * exp * exp * Temp.label -> exp
 	val breakT : Temp.label -> exp
 
+  val arrayT : exp * exp -> exp
+  val subscriptT : exp * exp -> exp
+  val recordT : exp list -> exp
+  val fieldT : exp * int -> exp
+  val sequencingT : exp list -> exp
 
-
+  val procEntryExit : {level: level, body: exp} -> unit
+  val getResult : unit -> MipsFrame.frag list
+  val resetFragList : unit -> unit
 
 end
 
@@ -190,6 +197,79 @@ structure Translate : TRANSLATE = struct
     fun breakT breaklabel = Nx(Tree.JUMP (Tree.NAME breaklabel, [breaklabel]))
 
 
-	
-	
+    fun arrayT (sizeEx, initEx) =
+          Ex(MipsFrame.externalCall("initArray", [unEx sizeEx, unEx initEx]))
+
+    fun subscriptT (arrEx, indexEx) =
+          let
+              val addr = Temp.newtemp()
+              val arr = unEx arrEx
+              val index = unEx indexEx
+          in
+              Ex(Tree.ESEQ(
+                Tree.MOVE(Tree.TEMPLOC(addr),
+                        Tree.BINOP(Tree.PLUS, arr,
+                                  Tree.BINOP(Tree.MUL, index, Tree.CONST(MipsFrame.wordSize)))),
+                Tree.MEM(Tree.TEMP(addr))))
+          end
+
+    fun recordT (exps) =
+          let
+              val n = length exps
+              val r = Temp.newtemp()
+              val recordInit = Tree.MOVE(Tree.TEMPLOC(r), MipsFrame.externalCall("initRecord", [Tree.CONST n]))
+              fun setField (exp, elem) = Tree.MOVE((Tree.MEMLOC(
+                                                      Tree.BINOP(Tree.PLUS, Tree.TEMP(r), Tree.CONST(MipsFrame.wordSize * elem)))), 
+                                                      unEx exp)
+              fun instantiateFields ([]) = [recordInit]
+                | instantiateFields (head :: l) = (setField(head, length l)) :: (instantiateFields (l))
+              fun convert ([]) = Tree.EXP(Tree.CONST 0)
+                | convert ([s]) = s
+                | convert (f::t) = Tree.SEQ([f, convert(t)])
+          in
+              Ex(Tree.ESEQ(
+                  convert(rev(instantiateFields(exps))), 
+                  Tree.TEMP(r)))
+          end
+
+    fun fieldT (nameEx, elem) =
+          Ex(Tree.MEM(Tree.BINOP(
+                      Tree.PLUS, unEx nameEx, 
+                      Tree.BINOP(Tree.MUL, Tree.CONST(elem), Tree.CONST (MipsFrame.wordSize)))))
+
+    fun sequencingT [] = Ex (Tree.CONST 0)
+      | sequencingT [exp] = exp
+      | sequencingT (head :: l) = Ex (Tree.ESEQ (unNx head, unEx (sequencingT l)))
+
+    fun callexpT (TOPLEVEL, calllevel, label, args) = Ex (Tree.TEMP MipsFrame.FP)
+      | callexpT (declevel as NONTOP{uniq, parent, frame}, calllevel, label, args) =
+        let
+            val sl = followSLs parent calllevel (Tree.TEMP MipsFrame.FP)
+            val unExedArgs = map unEx args
+        in
+            Ex (Tree.CALL (Tree.NAME label, sl :: unExedArgs))
+        end
+
+    fun procEntryExit({level=level', body=body'}) = 
+        let
+          val levelFrame =
+            case level' of
+                TOPLEVEL => (MipsFrame.newFrame {name=Temp.newlabel(), formals=[]})
+              | NONTOP({uniq=_, parent=_, frame=frame'}) => frame'
+          val treeBody = unNx body'
+        in
+          fragList := MipsFrame.PROC({body=treeBody, frame=levelFrame})::(!fragList)
+        end
+        
+    fun getResult() = !fragList
+
+    fun resetFragList() = fragList := []
+
+    fun concatExpList(expList, body as exp') =
+        let
+          fun createExpListStm(a::l) = unNx(a)::createExpListStm(l)
+            | createExpListStm([]) = []
+        in
+          Ex(Tree.ESEQ(Tree.SEQ(createExpListStm expList), unEx(exp')))
+        end
 end
