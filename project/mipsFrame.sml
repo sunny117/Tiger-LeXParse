@@ -1,6 +1,3 @@
-use "temp.sml";
-use "tree.sml";
-
 signature FRAME = sig
     type access
     type frame

@@ -1,5 +1,3 @@
-use "temp.sml";
-
 structure Tree = struct
 
 datatype exp = CONST of int

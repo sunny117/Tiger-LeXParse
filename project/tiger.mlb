@@ -7,3 +7,7 @@ tiger.grm.sig
 tiger.grm.sml
 tiger.lex.sml
 tiger.sml
+temp.sml
+tree.sml
+mipsFrame.sml
+translate.sml

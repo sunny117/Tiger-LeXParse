@@ -1,8 +1,3 @@
-use "tree.sml";
-use "temp.sml";
-use "mipsFrame.sml";
-
-
 signature TRANSLATE = sig
 	type exp
 	type level
@@ -37,6 +32,8 @@ signature TRANSLATE = sig
   val recordT : exp list -> exp
   val fieldT : exp * int -> exp
   val sequencingT : exp list -> exp
+
+  val simpleVarT : access * level -> exp
 
   val procEntryExit : {level: level, body: exp} -> unit
   val getResult : unit -> MipsFrame.frag list
@@ -240,6 +237,17 @@ structure Translate : TRANSLATE = struct
     fun sequencingT [] = Ex (Tree.CONST 0)
       | sequencingT [exp] = exp
       | sequencingT (head :: l) = Ex (Tree.ESEQ (unNx head, unEx (sequencingT l)))
+
+    fun followSLs TOPLEVEL TOPLEVEL bestguess = ( bestguess)
+              | followSLs TOPLEVEL _ bestguess = (bestguess)
+              | followSLs _ TOPLEVEL bestguess = (bestguess)
+              | followSLs (declevel as NONTOP{uniq=uniqdec, parent=_, frame=_}) (uselevel as NONTOP{uniq=uniquse, parent=useparent, frame=_}) bestguess =
+                    if uniqdec = uniquse
+                    then bestguess
+                    else followSLs declevel useparent (Tree.MEM bestguess)
+
+    fun simpleVarT ((declevel, fraccess), uselevel) =
+        Ex(MipsFrame.exp (fraccess, followSLs declevel uselevel (Tree.TEMP MipsFrame.FP)))
 
     fun callexpT (TOPLEVEL, calllevel, label, args) = Ex (Tree.TEMP MipsFrame.FP)
       | callexpT (declevel as NONTOP{uniq, parent, frame}, calllevel, label, args) =
