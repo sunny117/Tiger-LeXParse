@@ -1,7 +1,8 @@
 signature FRAME = sig
     type access
     type frame
-    type frag
+    datatype frag = PROC of {body: Tree.stm, frame: frame}
+                  | STRING of Temp.label * string
 
     val FP : Temp.temp
     val wordSize : int

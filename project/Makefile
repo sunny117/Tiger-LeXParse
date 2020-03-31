@@ -9,7 +9,7 @@ PHONY : all clean test
 all : parsing
 
 ir : 
-	mlton tiger.mlb
+	mlton ir.mlb
 
 parsing: ast.sml tiger.sml tiger.mlb tiger.grm.sml tiger.lex.sml indent.sml
 	mlton -output parsing tiger.mlb
