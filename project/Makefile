@@ -20,6 +20,7 @@ clean :
 	rm -f tiger.grm.desc
 	rm -f tiger.grm.sig
 	rm -f tiger.grm.sml
+	rm -f ir
 
 test: parsing
 	$(CURDIR)/parsing tests/simple_array.txt

@@ -91,11 +91,13 @@ structure Translate : TRANSLATE = struct
 	
 	fun unNx (Ex e) = Tree.EXP(e)
 	  | unNx (Nx s) = s
+    | unNx (c) = unNx(Ex(unEx(c)))
 
 	fun unCx (Ex (Tree.CONST 0)) = (fn(tlabel,flabel) => Tree.JUMP(Tree.NAME(flabel),[flabel]))
 	  | unCx (Ex (Tree.CONST 1)) = (fn(tlabel,flabel) => Tree.JUMP(Tree.NAME(tlabel),[tlabel]))
 	  | unCx (Ex e)				 = (fn(tlabel,flabel) => Tree.CJUMP(Tree.EQ,Tree.CONST 1,e,tlabel,flabel))
 	  | unCx (Cx c)				 = c
+    | unCx (Nx _)        = (fn(a,b) => Tree.LABEL(Temp.newlabel()))
 
 	val NIL = Ex(Tree.CONST 0)
 	
