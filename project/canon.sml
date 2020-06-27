@@ -86,4 +86,68 @@ struct
     linear(do_stm stm0, nil)t = saytemp src)
      
  end
+
+  type block = Tr.stm list
+
+  fun basicBlocks stms = 
+     let val done = Temp.newlabel()
+         fun blocks((head as Tr.LABEL _) :: tail, blist) =
+	     let fun next((s as (Tr.JUMP _))::rest, thisblock) =
+		                endblock(rest, s::thisblock)
+		   | next((s as (Tr.CJUMP _))::rest, thisblock) =
+                                endblock(rest,s::thisblock)
+		   | next(stms as (Tr.LABEL lab :: _), thisblock) =
+                                next(Tr.JUMP(Tr.NAME lab,[lab]) :: stms, thisblock)
+		   | next(s::rest, thisblock) = next(rest, s::thisblock)
+		   | next(nil, thisblock) = 
+			     next([Tr.JUMP(Tr.NAME done, [done])], thisblock)
+		 
+		 and endblock(stms, thisblock) = 
+		            blocks(stms, rev thisblock :: blist)
+		     
+	     in next(tail, [head])
+	     end
+	   | blocks(nil, blist) = rev blist
+	   | blocks(stms, blist) = blocks(Tr.LABEL(Temp.newlabel())::stms, blist)
+     in
+        (blocks(stms,nil), done)
+     end
+
+  fun enterblock(b as (Tr.LABEL s :: _), table) = Symbol.enter(table,s,b)
+    | enterblock(_, table) = table
+
+  fun splitlast([x]) = (nil,x)
+    | splitlast(h::t) = let val (t',last) = splitlast t in (h::t', last) end
+
+  fun trace(table,b as (Tr.LABEL lab :: _),rest) = 
+   let val table = Symbol.enter(table, lab, nil)
+    in case splitlast b
+     of (most,Tr.JUMP(Tr.NAME lab, _)) =>
+	  (case Symbol.look(table, lab)
+            of SOME(b' as _::_) => most @ trace(table, b', rest)
+	     | _ => b @ getnext(table,rest))
+      | (most,Tr.CJUMP(opr,x,y,t,f)) =>
+          (case (Symbol.look(table,t), Symbol.look(table,f))
+            of (_, SOME(b' as _::_)) => b @ trace(table, b', rest)
+             | (SOME(b' as _::_), _) => 
+		           most @ [Tr.CJUMP(Tr.notRel opr,x,y,f,t)]
+		                @ trace(table, b', rest)
+             | _ => let val f' = Temp.newlabel()
+		     in most @ [Tr.CJUMP(opr,x,y,t,f'), 
+				Tr.LABEL f', Tr.JUMP(Tr.NAME f,[f])]
+			     @ getnext(table,rest)
+                        end)
+      | (most, Tr.JUMP _) => b @ getnext(table,rest)
+     end
+
+  and getnext(table,(b as (Tr.LABEL lab::_))::rest) = 
+           (case Symbol.look(table, lab)
+             of SOME(_::_) => trace(table,b,rest)
+              | _ => getnext(table,rest))
+    | getnext(table,nil) = nil
+
+  fun traceSchedule(blocks,done) = 
+       getnext(foldr enterblock Symbol.empty blocks, blocks)
+         @ [Tr.LABEL done]
+
 end
